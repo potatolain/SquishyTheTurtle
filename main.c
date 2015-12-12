@@ -20,19 +20,19 @@ UBYTE i, j;
 
 UBYTE isMiniMode;
 UBYTE temp1, temp2, temp3;
-UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerHurting;
 UBYTE playerHealth;
 UBYTE buffer[20U];
 UINT16 playerWorldTileStart, temp16;
 UBYTE* currentMap;
 void init_vars() {
-	isMiniMode = 0U;
+	isMiniMode = 1U;
 	playerWorldPos = 0U;
 	playerWorldTileStart = get_map_tile_base_position();
 	currentMap = world_0;
 	btns = oldBtns = 0U;
 	playerXVel = playerYVel = 0U;
-	spriteSize = 16;
+	spriteSize = 8U;
 	
 	playerX = playerY = 36U;
 	playerHealth = 5U;
@@ -94,11 +94,21 @@ INT16 get_map_tile_base_position() {
 	return ((playerWorldPos / 10U) * (MAP_TILE_ROW_WIDTH*MAP_TILE_ROW_HEIGHT)) + ((playerWorldPos % 10U) * MAP_TILES_ACROSS);
 }
 
+// Returns collision, and ALSO SETS temp3 to whatever was collided with.
 UINT16 test_collision(UBYTE x, UBYTE y) {
 	// This offsets us by one tile to get us in line with 0-7= tile 0, 8-f = tile 1, etc...
 	x -= 8;
 	temp16 = playerWorldTileStart + (MAP_TILE_ROW_WIDTH * (((UINT16)y>>4U) - 1U)) + (((UINT16)x)>>4U);
-	if (currentMap[temp16] > FIRST_SOLID_TILE - 1U) {
+	temp3 = currentMap[temp16];
+	
+	if (temp3 > FIRST_WATER_TILE - 1U) {
+		if (isMiniMode) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	if (temp3 > FIRST_SOLID_TILE - 1U) {
 		return 1;
 	}
 	return 0;
@@ -115,6 +125,7 @@ void main_game_loop() {
 	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
 	temp1 = playerX + playerXVel;
 	temp2 = playerY + playerYVel;
+	temp3 = 0U;
 	if (playerXVel != 0) {
 		if (temp1+spriteSize >= SCREEN_WIDTH) {
 			playerX = 8U + PLAYER_MOVE_DISTANCE;
@@ -162,6 +173,12 @@ void main_game_loop() {
 			}
 		}
 	}
+	
+	// temp3 will be anything we might have collided with.
+	if (temp3 > FIRST_WATER_TILE) {
+		
+	}
+	
 		
 	if (isMiniMode) {
 		move_sprite(0U, playerX, playerY);

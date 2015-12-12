@@ -6,6 +6,7 @@
 #define SPRITE_SMALL 0
 #define SPRITE_BIG 4
 #define FIRST_SOLID_TILE 7U
+#define FIRST_WATER_TILE 8U
 
 #define PLAYER_MAX_HEALTH 5U
 
@@ -44,5 +45,5 @@ INT16 get_map_tile_base_position();
 // If this is grossing you out, please stop thinking about it like C. Think about it like the assembly behind it,
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
-extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState;
+extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerHurting;
 extern UINT16 temp16;
