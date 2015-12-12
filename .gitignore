@@ -1,0 +1,14 @@
+.dropbox.attr
+graphics/base_*
+graphics/title_*
+**/*.gb
+**/*.o
+**/*.lst
+processed
+tools/bgb/*
+tools/vba/*
+tools/upload
+tools/upload.bat
+gbdk/*
+!gbdk/README.md
+!tools/**/README.md
