@@ -30,6 +30,34 @@ void handle_input() {
 		}
 	}
 	
+	if (!(oldBtns & J_START) && btns & J_START) {
+		gameState = GAME_STATE_PAUSED;
+		// Darken the screen
+		BGP_REG = 0xf9;
+		for (i = 0; i < 6; i++)
+			buffer[i] = BLANK_TILE;
+		
+		buffer[i++] = DASH_TILE;
+		buffer[i++] = BLANK_TILE;
+		
+		buffer[i++] = PAUSE_TILE;
+		buffer[i++] = PAUSE_TILE+1U;
+		buffer[i++] = PAUSE_TILE+2U;
+		buffer[i++] = PAUSE_TILE+3U;
+		buffer[i++] = PAUSE_TILE+4U;
+		
+		buffer[i++] = BLANK_TILE;
+		buffer[i++] = DASH_TILE;
+		
+		for (; i < 20U; i++)
+			buffer[i] = BLANK_TILE;
+		
+		set_win_tiles(1U, 0U, 20U, 0U, buffer);
+		for (i = 0; i < 20U; i++)
+			buffer[i] = BLANK_TILE;
+		set_win_tiles(1U, 1U, 20U, 0U, buffer);
+	}
+	
 	// HAAAAAAAAAX
 	if (!(oldBtns & J_SELECT) && btns & J_SELECT) {
 		playerHealth = (playerHealth+1)%(PLAYER_MAX_HEALTH+1);
@@ -41,8 +69,25 @@ void update_health() {
 	for (i = 0; i < playerHealth; i++)
 		buffer[i] = HEART_TILE;
 
-	for (; i < (PLAYER_MAX_HEALTH+1); i++)
+	for (; i < 20U; i++)
 		buffer[i] = BLANK_TILE;
 	
-	set_win_tiles(1U, 0U, PLAYER_MAX_HEALTH+1, 0U, buffer);
+	set_win_tiles(1U, 0U, 19U, 0U, buffer);
+	for (i = 0; i < 20U; i++)
+		buffer[i] = BLANK_TILE;
+	set_win_tiles(1U, 1U, 19U, 0U, buffer);
+
+}
+
+void pause_loop() {
+	
+	oldBtns = btns;
+	btns = joypad();
+	
+	if (!(oldBtns & J_START) && btns & J_START) {
+		gameState = GAME_STATE_RUNNING;
+		BGP_REG = 0xe4;
+		update_health();
+	}
+	wait_vbl_done();
 }

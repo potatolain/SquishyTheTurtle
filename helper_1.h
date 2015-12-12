@@ -3,4 +3,5 @@
 #include <gb/gb.h>
 	void handle_input();
 	void update_health();
+	void pause_loop();
 #endif

@@ -20,7 +20,7 @@ UBYTE i, j;
 
 UBYTE isMiniMode;
 UBYTE temp1, temp2, temp3;
-UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState;
 UBYTE playerHealth;
 UBYTE buffer[20U];
 UINT16 playerWorldTileStart, temp16;
@@ -36,6 +36,7 @@ void init_vars() {
 	
 	playerX = playerY = 36U;
 	playerHealth = 5U;
+	gameState = GAME_STATE_RUNNING;
 }
 
 void load_map() {
@@ -65,8 +66,8 @@ void init_screen() {
 	DISPLAY_OFF;
 	
 	SWITCH_ROM_MBC1(BANK_GRAPHICS);
-	set_bkg_data(0U, 100U, base_tiles);
-	set_win_data(0U, 100U, base_tiles);
+	set_bkg_data(0U, 128U, base_tiles);
+	set_win_data(0U, 128U, base_tiles);
 	set_sprite_data(0U, 64U, base_sprites);
 	scroll_bkg(0U, 0U);
 	SPRITES_8x8;
@@ -186,6 +187,14 @@ void main(void) {
 	update_health();
 	
 	while(1) {
-		main_game_loop();
+		switch (gameState) {
+			case GAME_STATE_RUNNING:
+				main_game_loop();
+				break;
+			case GAME_STATE_PAUSED:
+				SWITCH_ROM_MBC1(BANK_HELPER_1);
+				pause_loop();
+				break;
+		}
 	}
 }

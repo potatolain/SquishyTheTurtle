@@ -1,5 +1,8 @@
 #include <gb/gb.h>
 
+#define GAME_STATE_RUNNING 0U
+#define GAME_STATE_PAUSED 1U
+
 #define SPRITE_SMALL 0
 #define SPRITE_BIG 4
 #define FIRST_SOLID_TILE 7U
@@ -8,6 +11,8 @@
 
 #define BLANK_TILE 0U
 #define HEART_TILE 96U
+#define PAUSE_TILE 91U
+#define DASH_TILE 90U
 
 #define PLAYER_ANIM_INTERVAL 0x08U // %00000100
 #define PLAYER_ANIM_SHIFT 3U
@@ -39,5 +44,5 @@ INT16 get_map_tile_base_position();
 // If this is grossing you out, please stop thinking about it like C. Think about it like the assembly behind it,
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
-extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth;
+extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState;
 extern UINT16 temp16;
