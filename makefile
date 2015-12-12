@@ -40,6 +40,7 @@ all:
 	$(CC) -Wa-l -Wf-bo3 -c -o bin/helper_1.o helper_1.c
 	$(CC) -Wa-l -Wf-bo4 -c -o bin/title_tiles.o processed/title_tiles.s
 	$(CC) -Wa-l -Wf-bo4 -c -o bin/title_screens.o processed/title_screens.s
+	$(CC) -Wa-l -Wf-bo4 -c -o bin/title.o title.c
 	$(CC) -Wl-yt1 -Wl-yo8 -o ludumdare.gb bin/*.o
 	
 emu: 

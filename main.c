@@ -1,5 +1,6 @@
 #include "main.h"
 #include "helper_1.h"
+#include "title.h"
 
 #include <gb/gb.h>
 #include <rand.h>
@@ -7,20 +8,19 @@
 // TODO LIST
 // 1. Figure out the write exception on every startup in bgb. (Saving grace: Real hardware doesn't seem to care.)
 // 2. Title this thing. Stretchy the turtle??
-// 3. Title screen
-// 4. Game over screen
 // 5. Make it not look stupid when you grow next to a wall.
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
 #define BANK_HELPER_1 3U
+#define BANK_TITLE 4U
 
 // This won't get confusing. Honest. I swear. &@#*!
 UBYTE i, j;
 
 UBYTE isMiniMode;
 UBYTE temp1, temp2, temp3;
-UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerHurting;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock;
 UBYTE playerHealth;
 UBYTE buffer[20U];
 UINT16 playerWorldTileStart, temp16;
@@ -37,6 +37,7 @@ void init_vars() {
 	playerX = playerY = 36U;
 	playerHealth = 5U;
 	gameState = GAME_STATE_RUNNING;
+	playerVelocityLock = 0U;
 }
 
 void load_map() {
@@ -101,12 +102,8 @@ UINT16 test_collision(UBYTE x, UBYTE y) {
 	temp16 = playerWorldTileStart + (MAP_TILE_ROW_WIDTH * (((UINT16)y>>4U) - 1U)) + (((UINT16)x)>>4U);
 	temp3 = currentMap[temp16];
 	
-	if (temp3 > FIRST_WATER_TILE - 1U) {
-		if (isMiniMode) {
-			return 1;
-		} else {
-			return 0;
-		}
+	if (temp3 > FIRST_WATER_TILE) {
+		return isMiniMode;
 	}
 	if (temp3 > FIRST_SOLID_TILE - 1U) {
 		return 1;
@@ -139,12 +136,12 @@ void main_game_loop() {
 			return;
 		} else {
 			if (playerXVel == PLAYER_MOVE_DISTANCE) {
-				if (!test_collision(temp1+spriteSize, temp2) && !test_collision(temp1+spriteSize, temp2+spriteSize)) {
-					playerX = temp1;
+				if (test_collision(temp1+spriteSize, temp2) || test_collision(temp1+spriteSize, temp2+spriteSize)) {
+					temp1 = playerX;
 				}
 			} else {
-				if (!test_collision(temp1, temp2) && !test_collision(temp1, temp2+spriteSize)) {
-					playerX = temp1;
+				if (test_collision(temp1, temp2) || test_collision(temp1, temp2+spriteSize)) {
+					temp1 = playerX;
 				}
 			}
 		}
@@ -163,55 +160,50 @@ void main_game_loop() {
 			return;
 		} else {
 			if (playerYVel == PLAYER_MOVE_DISTANCE) {
-				if (!test_collision(temp1, temp2+spriteSize) && !test_collision(temp1+spriteSize, temp2+spriteSize)) {
-					playerY = temp2;
+				if (test_collision(temp1, temp2+spriteSize) || test_collision(temp1+spriteSize, temp2+spriteSize)) {
+					temp2 = playerY;
 				}
 			} else {
-				if (!test_collision(temp1, temp2) && !test_collision(temp1+spriteSize, temp2)) {
-					playerY = temp2;
+				if (test_collision(temp1, temp2) || test_collision(temp1+spriteSize, temp2)) {
+					temp2 = playerY;
 				}
 			}
 		}
 	}
-	
-	// temp3 will be anything we might have collided with.
-	if (temp3 > FIRST_WATER_TILE) {
-		
-	}
-	
-		
-	if (isMiniMode) {
-		move_sprite(0U, playerX, playerY);
-		for (i = 1; i != 4U; i++)
-			move_sprite(i, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
-		set_sprite_tile(0, ((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)); // HACK: We know this is 0, so don't add a base # to it.
-	} else {
-		for (i = 0U; i != 4U; i++) {
-			move_sprite(i, playerX + (i/2U)*8U, playerY + (i%2U)*8U);
-			set_sprite_tile(i, SPRITE_BIG + (((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)*4)+i);
-		}
-	}
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	do_player_movey_stuff();
 	
 	// Limit us to not-batnose-crazy speeds
 	wait_vbl_done();
 }
 
 void main(void) {
-	init_vars();
-	init_screen();
-	
-	SWITCH_ROM_MBC1(BANK_HELPER_1);
-	update_health();
-	
-	while(1) {
-		switch (gameState) {
-			case GAME_STATE_RUNNING:
-				main_game_loop();
-				break;
-			case GAME_STATE_PAUSED:
-				SWITCH_ROM_MBC1(BANK_HELPER_1);
-				pause_loop();
-				break;
+	startOver:
+	//while (1) { // Superloop - will draw is back in if we game over.
+		init_vars();
+		
+		SWITCH_ROM_MBC1(BANK_TITLE);
+		show_title();
+		
+		init_screen();
+		
+		SWITCH_ROM_MBC1(BANK_HELPER_1);
+		update_health();
+		
+		while(1) {
+			switch (gameState) {
+				case GAME_STATE_RUNNING:
+					main_game_loop();
+					break;
+				case GAME_STATE_PAUSED:
+					SWITCH_ROM_MBC1(BANK_HELPER_1);
+					pause_loop();
+					break;
+				case GAME_STATE_GAME_OVER:
+					SWITCH_ROM_MBC1(BANK_TITLE);
+					show_game_over();
+					goto startOver; // FREEDOM!!!!!!!! Start over.
+			}
 		}
-	}
+	//}
 }

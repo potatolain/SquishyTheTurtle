@@ -2,13 +2,16 @@
 
 #define GAME_STATE_RUNNING 0U
 #define GAME_STATE_PAUSED 1U
+#define GAME_STATE_TITLE 2U
+#define GAME_STATE_GAME_OVER 3U
 
 #define SPRITE_SMALL 0
 #define SPRITE_BIG 4
 #define FIRST_SOLID_TILE 7U
-#define FIRST_WATER_TILE 8U
+#define FIRST_WATER_TILE 9U
 
 #define PLAYER_MAX_HEALTH 5U
+#define PLAYER_DAMAGE_TIME 25U
 
 #define BLANK_TILE 0U
 #define HEART_TILE 96U
@@ -17,6 +20,8 @@
 
 #define PLAYER_ANIM_INTERVAL 0x08U // %00000100
 #define PLAYER_ANIM_SHIFT 3U
+#define PLAYER_BLINKY_INTERVAL 0x04U
+#define PLAYER_BLINKY_SHIFT 2U
 #define PLAYER_MOVE_DISTANCE 2U
 
 #define MAP_TILES_ACROSS 10U
@@ -45,5 +50,6 @@ INT16 get_map_tile_base_position();
 // If this is grossing you out, please stop thinking about it like C. Think about it like the assembly behind it,
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
-extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerHurting;
+extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock;
 extern UINT16 temp16;
+extern UBYTE temp1, temp2, temp3;

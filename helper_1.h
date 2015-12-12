@@ -4,4 +4,5 @@
 	void handle_input();
 	void update_health();
 	void pause_loop();
+	void do_player_movey_stuff();
 #endif
