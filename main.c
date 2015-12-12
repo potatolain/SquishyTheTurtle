@@ -6,6 +6,9 @@
 
 // TODO LIST
 // 1. Figure out the write exception on every startup in bgb. (Saving grace: Real hardware doesn't seem to care.)
+// 2. Title this thing. Stretchy the turtle??
+// 3. Title screen
+// 4. Game over screen
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
@@ -15,8 +18,10 @@
 UBYTE i, j;
 
 UBYTE isMiniMode;
-UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel;
-UBYTE buffer[MAP_TILES_ACROSS*2];
+UBYTE temp1, temp2, temp3;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize;
+UBYTE playerHealth;
+UBYTE buffer[20U];
 UINT16 playerWorldTileStart;
 UBYTE* currentMap;
 void init_vars() {
@@ -26,12 +31,15 @@ void init_vars() {
 	currentMap = world_0;
 	btns = oldBtns = 0U;
 	playerXVel = playerYVel = 0U;
+	spriteSize = 16;
 	
-	playerX = playerY = 32U;
+	playerX = playerY = 36U;
+	playerHealth = 5U;
 }
 
 void load_map() {
 	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
+	playerWorldTileStart = get_map_tile_base_position();
 	
 	// This is efficient. I swear! NOT AT ALL AWFUL. IN ANY WAY. NOPE.
 	for (i = 0U; i != MAP_TILES_DOWN; i++) {
@@ -69,6 +77,9 @@ void init_screen() {
 
 	SHOW_BKG;
 	SHOW_SPRITES;
+
+	move_win(0, 128);
+	SHOW_WIN;
 	
 	DISPLAY_ON;
 	enable_interrupts();
@@ -88,8 +99,39 @@ void main_game_loop() {
 	btns = joypad();
 	handle_input();
 	
-	playerX += playerXVel;
-	playerY += playerYVel;
+	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
+	temp1 = playerX + playerXVel;
+	temp2 = playerY + playerYVel;
+	if (playerXVel != 0) {
+		if (temp1+spriteSize >= SCREEN_WIDTH) {
+			playerX = 8U + PLAYER_MOVE_DISTANCE;
+			playerWorldPos++;
+			load_map();
+			return;
+		} else if (temp1 <= 4U) {
+			playerX = SCREEN_WIDTH - spriteSize - PLAYER_MOVE_DISTANCE;
+			playerWorldPos--;
+			load_map();
+			return;
+		}
+	}
+	
+	if (playerYVel != 0) {
+		if (temp2+spriteSize >= SCREEN_HEIGHT) {
+			playerY = spriteSize + PLAYER_MOVE_DISTANCE;
+			playerWorldPos += 10U;
+			load_map();
+			return;
+		} else if (temp2 <= 4U) {
+			playerY = (SCREEN_HEIGHT - STATUS_BAR_HEIGHT) - PLAYER_MOVE_DISTANCE;
+			playerWorldPos -= 10U;
+			load_map();
+			return;
+		}
+	}
+	
+	playerX = temp1;
+	playerY = temp2;
 	
 	if (isMiniMode) {
 		move_sprite(0U, playerX, playerY);
@@ -110,6 +152,9 @@ void main_game_loop() {
 void main(void) {
 	init_vars();
 	init_screen();
+	
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	update_health();
 	
 	while(1) {
 		main_game_loop();
