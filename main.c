@@ -102,7 +102,10 @@ UINT16 test_collision(UBYTE x, UBYTE y) {
 	temp16 = playerWorldTileStart + (MAP_TILE_ROW_WIDTH * (((UINT16)y>>4U) - 1U)) + (((UINT16)x)>>4U);
 	temp3 = currentMap[temp16];
 	
-	if (temp3 > FIRST_WATER_TILE) {
+	if (temp3 == WALKABLE_LOG_TILE) {
+		return !isMiniMode; // Tiny you can walk. Big you can't. GET STUCKED!!
+	}
+	if (temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
 		return isMiniMode;
 	}
 	if (temp3 > FIRST_SOLID_TILE - 1U) {
@@ -140,7 +143,7 @@ void main_game_loop() {
 					temp1 = playerX;
 				}
 			} else {
-				if (test_collision(temp1, temp2) || test_collision(temp1, temp2+spriteSize)) {
+				if (test_collision(temp1-1U, temp2) || test_collision(temp1-1U, temp2+spriteSize)) {
 					temp1 = playerX;
 				}
 			}

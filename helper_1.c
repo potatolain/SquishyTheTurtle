@@ -86,7 +86,7 @@ void pause_loop() {
 
 void do_player_movey_stuff() {
 	// temp3 will be anything we might have collided with.
-	if (isMiniMode && temp3 > FIRST_WATER_TILE) {
+	if (isMiniMode && temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
 		playerXVel = -playerXVel;
 		playerYVel = -playerYVel;
 		temp1 = playerX + playerXVel;
