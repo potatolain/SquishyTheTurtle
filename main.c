@@ -1,31 +1,21 @@
+#include "main.h"
+#include "helper_1.h"
+
 #include <gb/gb.h>
 #include <rand.h>
-
-#define BANK_GRAPHICS 1U
-#define BANK_WORLD_DATA 2U
-
-#define MAP_TILES_ACROSS 10U
-#define MAP_TILES_DOWN 8U
-#define MAP_TILE_ROW_WIDTH 100U
-#define MAP_TILE_ROW_HEIGHT 8U 
-
-extern UBYTE base_tiles[];
-extern UBYTE base_sprites[];
-extern UBYTE world_0[];
-
-extern UINT16 sys_time;
 
 // TODO LIST
 // 1. Figure out the write exception on every startup in bgb. (Saving grace: Real hardware doesn't seem to care.)
 
-// Forward declarations in a C file with no header? HERESY!!!
-INT16 get_map_tile_base_position();
+#define BANK_GRAPHICS 1U
+#define BANK_WORLD_DATA 2U
+#define BANK_HELPER_1 3U
 
 // This won't get confusing. Honest. I swear. &@#*!
 UBYTE i, j;
 
 UBYTE isMiniMode;
-UBYTE playerWorldPos;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel;
 UBYTE buffer[MAP_TILES_ACROSS*2];
 UINT16 playerWorldTileStart;
 UBYTE* currentMap;
@@ -34,6 +24,10 @@ void init_vars() {
 	playerWorldPos = 0U;
 	playerWorldTileStart = get_map_tile_base_position();
 	currentMap = world_0;
+	btns = oldBtns = 0U;
+	playerXVel = playerYVel = 0U;
+	
+	playerX = playerY = 32U;
 }
 
 void load_map() {
@@ -86,8 +80,38 @@ INT16 get_map_tile_base_position() {
 	return ((playerWorldPos / 10U) * (MAP_TILE_ROW_WIDTH*MAP_TILE_ROW_HEIGHT)) + ((playerWorldPos % 10U) * MAP_TILES_ACROSS);
 }
 
+void main_game_loop() {
+	
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	
+	oldBtns = btns;
+	btns = joypad();
+	handle_input();
+	
+	playerX += playerXVel;
+	playerY += playerYVel;
+	
+	if (isMiniMode) {
+		move_sprite(0U, playerX, playerY);
+		for (i = 1; i != 4U; i++)
+			move_sprite(i, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
+		set_sprite_tile(0, ((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)); // HACK: We know this is 0, so don't add a base # to it.
+	} else {
+		for (i = 0U; i != 4U; i++) {
+			move_sprite(i, playerX + (i/2U)*8U, playerY + (i%2U)*8U);
+			set_sprite_tile(i, SPRITE_BIG + (((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)*4)+i);
+		}
+	}
+	
+	// Limit us to not-batnose-crazy speeds
+	wait_vbl_done();
+}
+
 void main(void) {
 	init_vars();
 	init_screen();
 	
+	while(1) {
+		main_game_loop();
+	}
 }

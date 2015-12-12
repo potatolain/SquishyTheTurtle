@@ -36,7 +36,8 @@ all:
 	$(CC) -Wa-l -Wf-bo1 -c -o base_tiles.o processed/base_tiles.s
 	$(CC) -Wa-l -Wf-bo1 -c -o base_sprites.o processed/base_sprites.s
 	$(CC) -Wa-l -Wf-bo2 -c -o world_0.o processed/world_0.s
-	$(CC) -Wl-yt1 -Wl-yo8 -o ludumdare.gb main.o base_tiles.o base_sprites.o world_0.o
+	$(CC) -Wa-l -Wf-bo3 -c -o helper_1.o helper_1.c
+	$(CC) -Wl-yt1 -Wl-yo8 -o ludumdare.gb main.o base_tiles.o base_sprites.o world_0.o helper_1.o
 	
 emu: 
 	$(BGB) ludumdare.gb 
