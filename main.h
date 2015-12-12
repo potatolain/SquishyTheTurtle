@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include "sprite.h"
 
 #define GAME_STATE_RUNNING 0U
 #define GAME_STATE_PAUSED 1U

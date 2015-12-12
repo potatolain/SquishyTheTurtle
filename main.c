@@ -1,6 +1,8 @@
 #include "main.h"
 #include "helper_1.h"
 #include "title.h"
+#include "sprite.h"
+#include "graphics/world_0_sprites.h"
 
 #include <gb/gb.h>
 #include <rand.h>
@@ -14,6 +16,7 @@
 #define BANK_WORLD_DATA 2U
 #define BANK_HELPER_1 3U
 #define BANK_TITLE 4U
+#define BANK_SPRITE_DATA 5U
 
 // This won't get confusing. Honest. I swear. &@#*!
 UBYTE i, j;
@@ -25,11 +28,17 @@ UBYTE playerHealth;
 UBYTE buffer[20U];
 UINT16 playerWorldTileStart, temp16;
 UBYTE* currentMap;
+UBYTE* tempPointer; 
+// Pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to...
+UBYTE* * * currentMapSprites;
+
+struct SPRITE sprites[6];
 void init_vars() {
 	isMiniMode = 1U;
 	playerWorldPos = 0U;
 	playerWorldTileStart = get_map_tile_base_position();
 	currentMap = world_0;
+	currentMapSprites = world_0_sprites;
 	btns = oldBtns = 0U;
 	playerXVel = playerYVel = 0U;
 	spriteSize = 8U;
@@ -59,6 +68,41 @@ void load_map() {
 		playerWorldTileStart += MAP_TILE_ROW_WIDTH;
 	}
 	playerWorldTileStart = get_map_tile_base_position(); // Clean up after yourself darnit!!
+	
+	
+	SWITCH_ROM_MBC1(BANK_SPRITE_DATA);
+	tempPointer = currentMapSprites[playerWorldPos];
+	temp1 = 0x00; // Generic data
+	temp2 = 0U; // Position
+	while(temp2 != MAX_SPRITES) {
+		temp1 = tempPointer++[0];
+		if (temp1 == 255U)
+			break;
+		
+		// Temp1 is our position.. convert to x/y
+		sprites[temp2].x = ((temp1 % 10U) << 4U) + 12U; // Add 4 to place at center of tile, subtract 8 to deal with offset by 1.
+		sprites[temp2].y = ((temp1 / 10U) << 4U) + 20U; // Add 16 so the first tile = 16, then add 4 to center within tile.
+		sprites[temp2].size = 8U;
+
+		sprites[temp2].type = tempPointer++[0];
+				
+		// Apply it to some real-world sprites too!
+		// Leaving room for 4 sprite... sprites, but for now, we'll just use the first.
+		set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2U), ENEMY_SPRITE_START + (sprites[temp2].type << 2U));
+		move_sprite(WORLD_SPRITE_START + (temp2 << 2U), sprites[temp2].x, sprites[temp2].y);
+		temp2++;
+	}
+	
+	while (temp2 != MAX_SPRITES) {
+		// Fill in the rest -- both in actual sprites and in our structs.
+		for (i = 0U; i < 4U; i++)
+			move_sprite(WORLD_SPRITE_START + (temp2 << 2U) + i, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
+		
+		sprites[temp2].type = SPRITE_TYPE_NONE;
+		sprites[temp2].x = sprites[temp2].y = SPRITE_OFFSCREEN;
+		sprites[temp2].size = 0U;
+		temp2++;
+	}
 }
 
 void init_screen() {

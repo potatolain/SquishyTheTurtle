@@ -41,6 +41,7 @@ all:
 	$(CC) -Wa-l -Wf-bo4 -c -o bin/title_tiles.o processed/title_tiles.s
 	$(CC) -Wa-l -Wf-bo4 -c -o bin/title_screens.o processed/title_screens.s
 	$(CC) -Wa-l -Wf-bo4 -c -o bin/title.o title.c
+	$(CC) -Wa-l -Wf-bo5 -c -o bin/world_0_sprites.o graphics/world_0_sprites.c
 	$(CC) -Wl-yt1 -Wl-yo8 -o ludumdare.gb bin/*.o
 	
 emu: 
