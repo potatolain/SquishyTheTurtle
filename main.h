@@ -2,6 +2,7 @@
 
 #define SPRITE_SMALL 0
 #define SPRITE_BIG 4
+#define FIRST_SOLID_TILE 7U
 
 #define PLAYER_MAX_HEALTH 5U
 
@@ -39,3 +40,4 @@ INT16 get_map_tile_base_position();
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
 extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth;
+extern UINT16 temp16;

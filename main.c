@@ -9,6 +9,7 @@
 // 2. Title this thing. Stretchy the turtle??
 // 3. Title screen
 // 4. Game over screen
+// 5. Make it not look stupid when you grow next to a wall.
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
@@ -22,7 +23,7 @@ UBYTE temp1, temp2, temp3;
 UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize;
 UBYTE playerHealth;
 UBYTE buffer[20U];
-UINT16 playerWorldTileStart;
+UINT16 playerWorldTileStart, temp16;
 UBYTE* currentMap;
 void init_vars() {
 	isMiniMode = 0U;
@@ -67,6 +68,7 @@ void init_screen() {
 	set_bkg_data(0U, 100U, base_tiles);
 	set_win_data(0U, 100U, base_tiles);
 	set_sprite_data(0U, 64U, base_sprites);
+	scroll_bkg(0U, 0U);
 	SPRITES_8x8;
 	
 	// Main char is first 4 sprites. (Though sometimse 1 will be used...)
@@ -91,6 +93,16 @@ INT16 get_map_tile_base_position() {
 	return ((playerWorldPos / 10U) * (MAP_TILE_ROW_WIDTH*MAP_TILE_ROW_HEIGHT)) + ((playerWorldPos % 10U) * MAP_TILES_ACROSS);
 }
 
+UINT16 test_collision(UBYTE x, UBYTE y) {
+	// This offsets us by one tile to get us in line with 0-7= tile 0, 8-f = tile 1, etc...
+	x -= 8;
+	temp16 = playerWorldTileStart + (MAP_TILE_ROW_WIDTH * (((UINT16)y>>4U) - 1U)) + (((UINT16)x)>>4U);
+	if (currentMap[temp16] > FIRST_SOLID_TILE - 1U) {
+		return 1;
+	}
+	return 0;
+}
+
 void main_game_loop() {
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
@@ -113,6 +125,16 @@ void main_game_loop() {
 			playerWorldPos--;
 			load_map();
 			return;
+		} else {
+			if (playerXVel == PLAYER_MOVE_DISTANCE) {
+				if (!test_collision(temp1+spriteSize, temp2) && !test_collision(temp1+spriteSize, temp2+spriteSize)) {
+					playerX = temp1;
+				}
+			} else {
+				if (!test_collision(temp1, temp2) && !test_collision(temp1, temp2+spriteSize)) {
+					playerX = temp1;
+				}
+			}
 		}
 	}
 	
@@ -127,12 +149,19 @@ void main_game_loop() {
 			playerWorldPos -= 10U;
 			load_map();
 			return;
+		} else {
+			if (playerYVel == PLAYER_MOVE_DISTANCE) {
+				if (!test_collision(temp1, temp2+spriteSize) && !test_collision(temp1+spriteSize, temp2+spriteSize)) {
+					playerY = temp2;
+				}
+			} else {
+				if (!test_collision(temp1, temp2) && !test_collision(temp1+spriteSize, temp2)) {
+					playerY = temp2;
+				}
+			}
 		}
 	}
-	
-	playerX = temp1;
-	playerY = temp2;
-	
+		
 	if (isMiniMode) {
 		move_sprite(0U, playerX, playerY);
 		for (i = 1; i != 4U; i++)
