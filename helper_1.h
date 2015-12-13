@@ -6,4 +6,5 @@
 	void pause_loop();
 	void do_player_movey_stuff();
 	void directionalize_sprites();
+	void test_sprite_collision();
 #endif

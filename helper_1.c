@@ -127,11 +127,11 @@ void do_player_movey_stuff() {
 void directionalize_sprites() {
 	// Kind of bizarre, but it gives us a good variation.
 	if (cycleCounter % 60U < MAX_SPRITES) {
-		temp3 = rand() % 16U;
+		temp3 = rand() % 32U;
 		if (temp3 > SPRITE_DIRECTION_DOWN) {
 			if (temp3 < 9) {
 				temp3 = SPRITE_DIRECTION_STOP;
-			} else if (temp3 < 12) {
+			} else if (temp3 < 21) {
 				temp4 = playerX + (spriteSize/2U);
 				temp5 = sprites[temp1].x + (sprites[temp1].size/2U);
 				if (temp4 < temp5)
@@ -151,4 +151,8 @@ void directionalize_sprites() {
 		sprites[temp1].direction = temp3;
 	}
 
+}
+
+void test_sprite_collision() {
+	return;
 }
