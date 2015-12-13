@@ -16,4 +16,5 @@
 	UBYTE get_collision_with_temp3();
 	void animate_exit();
 	void write_map_to_memory();
+	void move_enemy_sprite();
 #endif

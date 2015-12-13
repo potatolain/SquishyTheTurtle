@@ -4,7 +4,7 @@
 #include <gb/gb.h>
 #include "sprite.h"
 
-#define START_LEVEL 0U
+#define START_LEVEL 2U
 
 #define GAME_STATE_RUNNING 0U
 #define GAME_STATE_PAUSED 1U
@@ -75,7 +75,7 @@ UBYTE get_tile_at_pos(UINT16 position);
 extern UBYTE i, j;
 extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum, exitPositionX, exitPositionY;
 extern UINT16 temp16, playerWorldTileStart, temp16b;
-extern UBYTE temp1, temp2, temp3, temp4, temp5;
+extern UBYTE temp1, temp2, temp3, temp4, temp5, temp6;
 extern UBYTE collisionsAreForPlayer;
 extern struct SPRITE sprites[6];
 extern enum SPRITE_DIRECTION playerDirection;

@@ -196,14 +196,14 @@ void directionalize_sprites() {
 				} else if (temp3 < 21) {
 					temp4 = playerX + (spriteSize/2U);
 					temp5 = sprites[temp1].x + (sprites[temp1].size/2U);
-					if (temp4 < temp5)
+					if ((sprites[temp1].type == SPRITE_TYPE_SPIDER && (temp4 < temp5)) || (sprites[temp1].type == SPRITE_TYPE_CRAB && (temp4 > temp5)))
 						temp3 = isMiniMode ? SPRITE_DIRECTION_LEFT : SPRITE_DIRECTION_RIGHT;
 					else
 						temp3 = isMiniMode ? SPRITE_DIRECTION_RIGHT : SPRITE_DIRECTION_LEFT;
 				} else {
 					temp4 = playerY + (spriteSize/2U);
 					temp5 = sprites[temp1].y + (sprites[temp1].size/2U);
-					if (temp4 < temp5)
+					if ((sprites[temp1].type == SPRITE_TYPE_SPIDER && (temp4 < temp5)) || (sprites[temp1].type == SPRITE_TYPE_CRAB && (temp4 > temp5)))
 						temp3 = isMiniMode ? SPRITE_DIRECTION_UP : SPRITE_DIRECTION_DOWN;
 					else
 						temp3 = isMiniMode ? SPRITE_DIRECTION_DOWN : SPRITE_DIRECTION_UP;
@@ -215,7 +215,6 @@ void directionalize_sprites() {
 		
 		temp4 = sprites[temp1].x;
 		temp5 = sprites[temp1].y;
-
 		switch (sprites[temp1].direction) {
 			case SPRITE_DIRECTION_LEFT: 
 				temp4 -= SPIDER_SPEED;
@@ -237,12 +236,23 @@ void directionalize_sprites() {
 	
 	// We're about to do sprite collision, but have 0 space in that bank. So... let's tell ourselves we're going to do sprite collisions.
 	collisionsAreForPlayer = 0;
+	
+	// Speaking of things that don't fit in the bank they belong... let's figure out the width of our sprite.
+	temp6 = sprites[temp1].size;
+	if (sprites[temp1].type == SPRITE_TYPE_CRAB)
+		temp6 = 16U;
 }
 
 void test_sprite_collision() {
+	UBYTE spriteWidth, spriteHeight;
 	for (i = 0U; i < MAX_SPRITES; i++) {
-		if (playerX < sprites[i].x + sprites[i].size && playerX + spriteSize > sprites[i].x && 
-				playerY < sprites[i].y + sprites[i].size && playerY + spriteSize > sprites[i].y) {
+		spriteWidth = sprites[i].size;
+		spriteHeight = sprites[i].size;
+		if (sprites[i].type == SPRITE_TYPE_CRAB) {
+			spriteWidth = 16U; // Crabs are 16x8. Figure that out!
+		}
+		if (playerX < sprites[i].x + spriteWidth && playerX + spriteSize > sprites[i].x && 
+				playerY < sprites[i].y + spriteHeight && playerY + spriteSize > sprites[i].y) {
 			
 			if (sprites[i].type == SPRITE_TYPE_EGG) {
 				currentEggs++;
@@ -384,4 +394,21 @@ void write_map_to_memory() {
 	set_bkg_tiles(0U, i*2U+1U, 20U, 1U, buffer);
 	playerWorldTileStart += MAP_TILE_ROW_WIDTH;
 
+}
+
+void move_enemy_sprite() {
+	sprites[temp1].x = temp4;
+	sprites[temp1].y = temp5;
+	
+	if (sprites[temp1].type == SPRITE_TYPE_CRAB) {
+		// The patchwork crab... other move is in main()
+		move_sprite(WORLD_SPRITE_START + (temp1 << 2U)+1U, temp4+8U, temp5);
+		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), CRAB_SPRITE + (((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT)<<1U));
+		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U)+1U, CRAB_SPRITE + 1U + (((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT)<<1U));
+	} else {
+		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), ENEMY_SPRITE_START + (sprites[temp1].type << 2U) + ((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT));
+		// This is just getting scary bad...
+		move_sprite(WORLD_SPRITE_START + (temp1 << 2U)+1U, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
+	}
+	
 }

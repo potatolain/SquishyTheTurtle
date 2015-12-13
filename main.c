@@ -9,11 +9,8 @@
 
 // TODO: 
 // - Create levels
-// - Animate exit
 // - SFX?
-// - 4th enemy... funky huge rabbit
 // - Tell people how to play this stupid thing.
-// - Make the spider not look like butt.
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
@@ -25,7 +22,7 @@
 UBYTE i, j;
 
 UBYTE isMiniMode;
-UBYTE temp1, temp2, temp3, temp4, temp5;
+UBYTE temp1, temp2, temp3, temp4, temp5, temp6;
 UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum, exitPositionX, exitPositionY;
 UBYTE playerHealth;
 UBYTE collisionsAreForPlayer; // SUPER HACK... simply tells us whether we are doing player collisions or sprite collisions.
@@ -153,13 +150,13 @@ void move_sprites() {
 		if (sprites[temp1].direction == SPRITE_DIRECTION_STOP)
 			return;
 
-		
+		// temp6 is our sprite width.
 		if (sprites[temp1].direction == SPRITE_DIRECTION_LEFT || sprites[temp1].direction == SPRITE_DIRECTION_RIGHT) {
-			if (temp4+sprites[temp1].size >= SCREEN_WIDTH || temp4 <= 4U) {
+			if (temp4+temp6 >= SCREEN_WIDTH || temp4 <= 4U) {
 				temp4 = sprites[temp1].x;
 			} else {
 				if (sprites[temp1].direction == SPRITE_DIRECTION_RIGHT) {
-					if (test_collision(temp4+sprites[temp1].size, temp5) || test_collision(temp4 + sprites[temp1].size, temp5+sprites[temp1].size)) {
+					if (test_collision(temp4+temp6, temp5) || test_collision(temp4 + temp6, temp5+sprites[temp1].size)) {
 						temp4 = sprites[temp1].x;
 					}
 				} else {
@@ -187,12 +184,14 @@ void move_sprites() {
 		}
 		
 		// Okay, you can move.
-		sprites[temp1].x = temp4;
-		sprites[temp1].y = temp5;
-		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), ENEMY_SPRITE_START + (sprites[temp1].type << 2U) + ((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT));
+		SWITCH_ROM_MBC1(BANK_HELPER_1);
+		move_enemy_sprite();
+		SWITCH_ROM_MBC1(BANK_WORLD_DATA);
 	} else {
 		// You're an egg.
 		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), EGG_SPRITE);
+		// Crab artifacts...
+		move_sprite(WORLD_SPRITE_START + (temp1 << 2U)+1, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
 	}
 	
 	move_sprite(WORLD_SPRITE_START + (temp1 << 2U), temp4, temp5);
