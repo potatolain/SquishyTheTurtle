@@ -180,7 +180,9 @@ void do_player_movey_stuff() {
 	
 	if (playerVelocityLock > 0)
 		playerVelocityLock--;
-
+	
+	// Weird place to do this, but this will be called once per frame. While we're in this bank...
+	animate_exit();
 }
 
 void directionalize_sprites() {
@@ -232,6 +234,9 @@ void directionalize_sprites() {
 		temp4 = sprites[temp1].x;
 		temp5 = sprites[temp1].y;
 	}
+	
+	// We're about to do sprite collision, but have 0 space in that bank. So... let's tell ourselves we're going to do sprite collisions.
+	collisionsAreForPlayer = 0;
 }
 
 void test_sprite_collision() {
@@ -347,12 +352,36 @@ UBYTE get_collision_with_temp3() {
 	if (temp3 == WALKABLE_LOG_TILE) {
 		return !isMiniMode; // Tiny you can walk. Big you can't. GET STUCKED!!
 	}
-	if (temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
+	if (collisionsAreForPlayer && temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
 		return isMiniMode;
 	}
 	if (temp3 > FIRST_SOLID_TILE - 1U) {
 		return 1;
 	}
 	return 0;
+
+}
+
+void animate_exit() {
+	if (currentEggs < totalEggs || exitPositionX == 255U || exitPositionY == 255U)
+		return;
+	
+	temp1 = ((sys_time & EXIT_ANIM_INTERVAL) >> EXIT_ANIM_SHIFT) << 2; // add 0/4
+	
+	buffer[0] = (TELEPORTER_TILE_ANIM_1<<2) + temp1;
+	buffer[2] = buffer[0]+1;
+	buffer[1] = buffer[2]+1;
+	buffer[3] = buffer[1]+1;
+	set_bkg_tiles(exitPositionX, exitPositionY, 2U, 2U, buffer);
+}
+
+void write_map_to_memory() {
+	set_bkg_tiles(0U, i*2U, 20U, 1U, buffer);
+	
+	for (j = 0U; j != MAP_TILES_ACROSS*2; j++) {
+		buffer[j]++;
+	}
+	set_bkg_tiles(0U, i*2U+1U, 20U, 1U, buffer);
+	playerWorldTileStart += MAP_TILE_ROW_WIDTH;
 
 }

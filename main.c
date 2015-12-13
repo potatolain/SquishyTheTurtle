@@ -26,8 +26,9 @@ UBYTE i, j;
 
 UBYTE isMiniMode;
 UBYTE temp1, temp2, temp3, temp4, temp5;
-UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum, exitPositionX, exitPositionY;
 UBYTE playerHealth;
+UBYTE collisionsAreForPlayer; // SUPER HACK... simply tells us whether we are doing player collisions or sprite collisions.
 UBYTE buffer[20U];
 UBYTE eggStatus[13U]; // 1 bit per tile... 
 UINT16 playerWorldTileStart, temp16, temp16b;
@@ -43,6 +44,7 @@ void load_map() {
 	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
 	currentMap = world_0;
 	currentMapSprites = world_0_sprites;
+	exitPositionX = exitPositionY = 255U;
 
 	playerWorldTileStart = get_map_tile_base_position();
 	
@@ -51,14 +53,13 @@ void load_map() {
 		for (j = 0U; j != MAP_TILES_ACROSS; j++) {
 			buffer[j*2U] = currentMap[playerWorldTileStart + j] * 4U; // TODO: Bit shifts > multiplication. Our compiler's not smart enough to convert for us..
 			buffer[j*2U+1U] = buffer[j*2U]+2U;
+			if (buffer[j*2U] == (TELEPORTER_TILE<<2)) {
+				exitPositionX = j<<1U;
+				exitPositionY = i<<1U;
+			}
 		}
-		set_bkg_tiles(0U, i*2U, 20U, 1U, buffer);
-		
-		for (j = 0U; j != MAP_TILES_ACROSS*2; j++) {
-			buffer[j]++;
-		}
-		set_bkg_tiles(0U, i*2U+1U, 20U, 1U, buffer);
-		playerWorldTileStart += MAP_TILE_ROW_WIDTH;
+		SWITCH_ROM_MBC1(BANK_HELPER_1);
+		write_map_to_memory();
 	}
 	playerWorldTileStart = get_map_tile_base_position(); // Clean up after yourself darnit!!
 	
@@ -214,6 +215,7 @@ void main_game_loop() {
 	temp1 = playerX + playerXVel;
 	temp2 = playerY + playerYVel;
 	temp3 = 0U;
+	collisionsAreForPlayer = 1;
 	if (playerXVel != 0) {
 		if (temp1+spriteSize >= SCREEN_WIDTH) {
 			playerX = 8U + PLAYER_MOVE_DISTANCE_FAST;

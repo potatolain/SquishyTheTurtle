@@ -14,4 +14,6 @@
 	void test_for_egg();
 	void move_sprites_for_load();
 	UBYTE get_collision_with_temp3();
+	void animate_exit();
+	void write_map_to_memory();
 #endif

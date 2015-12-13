@@ -33,6 +33,10 @@
 #define SLASH_TILE 108U
 #define NUMERIC_TILE 98U
 #define TELEPORTER_TILE 5U
+#define TELEPORTER_TILE_ANIM_1 28
+#define TELEPORTER_TILE_ANIM_2 29
+#define EXIT_ANIM_INTERVAL 0x32U
+#define EXIT_ANIM_SHIFT 5U
 
 #define PLAYER_ANIM_INTERVAL 0x08U // %00000100
 #define PLAYER_ANIM_SHIFT 3U
@@ -69,9 +73,10 @@ UBYTE get_tile_at_pos(UINT16 position);
 // If this is grossing you out, please stop thinking about it like C. Think about it like the assembly behind it,
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
-extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum;
+extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum, exitPositionX, exitPositionY;
 extern UINT16 temp16, playerWorldTileStart, temp16b;
 extern UBYTE temp1, temp2, temp3, temp4, temp5;
+extern UBYTE collisionsAreForPlayer;
 extern struct SPRITE sprites[6];
 extern enum SPRITE_DIRECTION playerDirection;
 extern UBYTE* currentMap;
