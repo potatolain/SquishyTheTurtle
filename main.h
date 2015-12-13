@@ -1,3 +1,6 @@
+#ifndef MAIN_H
+#define MAIN_H
+
 #include <gb/gb.h>
 #include "sprite.h"
 
@@ -53,6 +56,9 @@ INT16 get_map_tile_base_position();
 // If this is grossing you out, please stop thinking about it like C. Think about it like the assembly behind it,
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
-extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock;
+extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter;
 extern UINT16 temp16;
-extern UBYTE temp1, temp2, temp3;
+extern UBYTE temp1, temp2, temp3, temp4, temp5;
+extern struct SPRITE sprites[6];
+
+#endif

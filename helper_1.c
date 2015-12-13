@@ -1,6 +1,7 @@
 #include "helper_1.h"
 #include "main.h"
 #include <gb/gb.h>
+#include <rand.h>
 
 // Yes, this is a pretty lame way to organize this thing... it's a 48 hour coding marathon, put up with it, or go elsewhere! 
 
@@ -120,5 +121,34 @@ void do_player_movey_stuff() {
 	
 	if (playerVelocityLock > 0)
 		playerVelocityLock--;
+
+}
+
+void directionalize_sprites() {
+	// Kind of bizarre, but it gives us a good variation.
+	if (cycleCounter % 60U < MAX_SPRITES) {
+		temp3 = rand() % 16U;
+		if (temp3 > SPRITE_DIRECTION_DOWN) {
+			if (temp3 < 9) {
+				temp3 = SPRITE_DIRECTION_STOP;
+			} else if (temp3 < 12) {
+				temp4 = playerX + (spriteSize/2U);
+				temp5 = sprites[temp1].x + (sprites[temp1].size/2U);
+				if (temp4 < temp5)
+					temp3 = isMiniMode ? SPRITE_DIRECTION_LEFT : SPRITE_DIRECTION_RIGHT;
+				else
+					temp3 = isMiniMode ? SPRITE_DIRECTION_RIGHT : SPRITE_DIRECTION_LEFT;
+			} else {
+				temp4 = playerY + (spriteSize/2U);
+				temp5 = sprites[temp1].y + (sprites[temp1].size/2U);
+				if (temp4 < temp5)
+					temp3 = isMiniMode ? SPRITE_DIRECTION_UP : SPRITE_DIRECTION_DOWN;
+				else
+					temp3 = isMiniMode ? SPRITE_DIRECTION_DOWN : SPRITE_DIRECTION_UP;
+
+			}
+		}
+		sprites[temp1].direction = temp3;
+	}
 
 }

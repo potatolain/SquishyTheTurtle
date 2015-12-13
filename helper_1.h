@@ -5,4 +5,5 @@
 	void update_health();
 	void pause_loop();
 	void do_player_movey_stuff();
+	void directionalize_sprites();
 #endif

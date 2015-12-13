@@ -22,8 +22,8 @@
 UBYTE i, j;
 
 UBYTE isMiniMode;
-UBYTE temp1, temp2, temp3;
-UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock;
+UBYTE temp1, temp2, temp3, temp4, temp5;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter;
 UBYTE playerHealth;
 UBYTE buffer[20U];
 UINT16 playerWorldTileStart, temp16;
@@ -80,7 +80,7 @@ void load_map() {
 			break;
 		
 		// Temp1 is our position.. convert to x/y
-		sprites[temp2].x = ((temp1 % 10U) << 4U) + 12U; // Add 4 to place at center of tile, subtract 8 to deal with offset by 1.
+		sprites[temp2].x = ((temp1 % 10U) << 4U) + 12U; // Add 4 to place at center of tile, add 8 to deal with offset by 1.
 		sprites[temp2].y = ((temp1 / 10U) << 4U) + 20U; // Add 16 so the first tile = 16, then add 4 to center within tile.
 		sprites[temp2].size = 8U;
 
@@ -158,6 +158,44 @@ UINT16 test_collision(UBYTE x, UBYTE y) {
 	return 0;
 }
 
+void move_sprites() {
+	temp1 = cycleCounter % MAX_SPRITES;
+	if (sprites[temp1].type == SPRITE_TYPE_NONE)
+		return;
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	directionalize_sprites();
+	
+	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
+	if (sprites[temp1].direction == SPRITE_DIRECTION_STOP)
+		return;
+	temp4 = sprites[temp1].x;
+	temp5 = sprites[temp1].y;
+
+	switch (sprites[temp1].direction) {
+		case SPRITE_DIRECTION_LEFT: 
+			temp4 -= SPIDER_SPEED;
+			break;
+		case SPRITE_DIRECTION_RIGHT:
+			temp4 += SPIDER_SPEED;
+			break;
+		case SPRITE_DIRECTION_UP:
+			temp5 -= SPIDER_SPEED;
+			break;
+		case SPRITE_DIRECTION_DOWN:
+			temp5 += SPIDER_SPEED;
+			break;
+	}
+	
+	// Now, we test collision with our temp4 and temp5
+	
+	sprites[temp1].x = temp4;
+	sprites[temp1].y = temp5;
+	
+	set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), ENEMY_SPRITE_START + (sprites[temp1].type << 2U) + ((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT));
+	move_sprite(WORLD_SPRITE_START + (temp1 << 2U), temp4, temp5);
+	// TODO: Other 4 for larger sprites.
+}
+
 void main_game_loop() {
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
@@ -165,6 +203,8 @@ void main_game_loop() {
 	oldBtns = btns;
 	btns = joypad();
 	handle_input();
+	
+	move_sprites();
 	
 	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
 	temp1 = playerX + playerXVel;
@@ -226,31 +266,31 @@ void main_game_loop() {
 
 void main(void) {
 	startOver:
-	//while (1) { // Superloop - will draw is back in if we game over.
-		init_vars();
-		
-		SWITCH_ROM_MBC1(BANK_TITLE);
-		show_title();
-		
-		init_screen();
-		
-		SWITCH_ROM_MBC1(BANK_HELPER_1);
-		update_health();
-		
-		while(1) {
-			switch (gameState) {
-				case GAME_STATE_RUNNING:
-					main_game_loop();
-					break;
-				case GAME_STATE_PAUSED:
-					SWITCH_ROM_MBC1(BANK_HELPER_1);
-					pause_loop();
-					break;
-				case GAME_STATE_GAME_OVER:
-					SWITCH_ROM_MBC1(BANK_TITLE);
-					show_game_over();
-					goto startOver; // FREEDOM!!!!!!!! Start over.
-			}
+	init_vars();
+	
+	SWITCH_ROM_MBC1(BANK_TITLE);
+	show_title();
+	initrand(sys_time);
+	
+	init_screen();
+	
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	update_health();
+	
+	while(1) {
+		switch (gameState) {
+			case GAME_STATE_RUNNING:
+				main_game_loop();
+				break;
+			case GAME_STATE_PAUSED:
+				SWITCH_ROM_MBC1(BANK_HELPER_1);
+				pause_loop();
+				break;
+			case GAME_STATE_GAME_OVER:
+				SWITCH_ROM_MBC1(BANK_TITLE);
+				show_game_over();
+				goto startOver; // FREEDOM!!!!!!!! Start over.
 		}
-	//}
+		cycleCounter++;
+	}
 }
