@@ -7,6 +7,11 @@
 #include <gb/gb.h>
 #include "../sprite.h"
 
+const UBYTE world_0_egg_counts[] = 			{ 3U, 	4U, 	2U };
+const UBYTE world_0_start_positions[] =		{ 0U, 	2U, 	3U};
+const UBYTE world_0_x_start_positions[] = 	{ 36U, 	36U, 	36U};
+const UBYTE world_0_y_start_positions[] = 	{ 36U, 	36U, 	36U};
+
 const UBYTE world_0_data[1] = { 
 	3U // Total eggs
 };

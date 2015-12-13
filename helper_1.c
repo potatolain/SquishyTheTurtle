@@ -7,6 +7,9 @@
 
 void handle_input() {
 	
+	oldBtns = btns;
+	btns = joypad();
+	
 	if (!playerVelocityLock) {
 		playerXVel = playerYVel = 0;
 
@@ -285,11 +288,11 @@ void init_vars() {
 	playerXVel = playerYVel = 0U;
 	spriteSize = 8U;
 	
-	playerX = playerY = 36U;
 	playerHealth = 5U;
 	gameState = GAME_STATE_RUNNING;
 	playerVelocityLock = 0U;
 	currentEggs = 0U;
+	currentLevelNum = 0U;
 	for (i = 0; i < 13; i++)
 		eggStatus[i] = 0;
 
@@ -325,5 +328,12 @@ void test_for_egg() {
 			sprites[temp2].type = SPRITE_TYPE_NONE;
 		}
 	}
+
+}
+
+void move_sprites_for_load() {
+	// Leaving room for 4 sprite... sprites, but for now, we'll just use the first.
+	set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2U), ENEMY_SPRITE_START + (sprites[temp2].type << 2U));
+	move_sprite(WORLD_SPRITE_START + (temp2 << 2U), sprites[temp2].x, sprites[temp2].y);
 
 }

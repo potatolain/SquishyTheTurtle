@@ -1,5 +1,5 @@
-GRAPHICS_FILES = base_sprites base_tiles title_tiles win_tiles
-TILE_FILES = world_0 title_screens win_screens
+GRAPHICS_FILES = base_sprites base_tiles title_tiles
+TILE_FILES = world_0 title_screens
 
 ifeq ($(OS),Windows_NT)
 # Nasty little trick to get us a backslash.

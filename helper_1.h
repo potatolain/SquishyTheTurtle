@@ -12,4 +12,5 @@
 	void finish_init_screen();
 	void update_egg();
 	void test_for_egg();
+	void move_sprites_for_load();
 #endif

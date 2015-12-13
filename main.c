@@ -25,7 +25,7 @@ UBYTE i, j;
 
 UBYTE isMiniMode;
 UBYTE temp1, temp2, temp3, temp4, temp5;
-UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs;
+UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum;
 UBYTE playerHealth;
 UBYTE buffer[20U];
 UBYTE eggStatus[13U]; // 1 bit per tile... 
@@ -63,7 +63,6 @@ void load_map() {
 	
 	
 	SWITCH_ROM_MBC1(BANK_SPRITE_DATA);
-	totalEggs = world_0_data[0];
 
 	tempPointer = currentMapSprites[playerWorldPos];
 	temp1 = 0x00; // Generic data
@@ -82,12 +81,10 @@ void load_map() {
 		// Annihilate eggs we've already fetched.
 		SWITCH_ROM_MBC1(BANK_HELPER_1);
 		test_for_egg();
+		// Apply it to some real-world sprites too!
+		move_sprites_for_load();
 		SWITCH_ROM_MBC1(BANK_SPRITE_DATA);
 		
-		// Apply it to some real-world sprites too!
-		// Leaving room for 4 sprite... sprites, but for now, we'll just use the first.
-		set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2U), ENEMY_SPRITE_START + (sprites[temp2].type << 2U));
-		move_sprite(WORLD_SPRITE_START + (temp2 << 2U), sprites[temp2].x, sprites[temp2].y);
 		temp2++;
 	}
 	
@@ -208,8 +205,6 @@ void main_game_loop() {
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	
-	oldBtns = btns;
-	btns = joypad();
 	handle_input();
 	
 	if (!playerVelocityLock) {
@@ -276,6 +271,15 @@ void main_game_loop() {
 	wait_vbl_done();
 }
 
+void init_level() {
+	SWITCH_ROM_MBC1(BANK_SPRITE_DATA);
+	totalEggs = world_0_egg_counts[currentLevelNum];
+	playerX = world_0_x_start_positions[currentLevelNum];
+	playerY = world_0_y_start_positions[currentLevelNum];
+	playerWorldPos = world_0_start_positions[currentLevelNum];
+
+}
+
 void main(void) {
 	startOver:
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
@@ -285,6 +289,7 @@ void main(void) {
 	show_title();
 	initrand(sys_time);
 	
+	init_level();
 	init_screen();
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);

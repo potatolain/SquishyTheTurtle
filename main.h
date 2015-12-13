@@ -49,6 +49,8 @@
 
 #define SPRITE_OFFSCREEN 0xEF
 
+#define LAST_LEVEL 3U
+
 extern UBYTE base_tiles[];
 extern UBYTE base_sprites[];
 extern UBYTE world_0[];
@@ -60,12 +62,11 @@ extern UINT16 sys_time;
 INT16 get_map_tile_base_position();
 UBYTE get_tile_at_pos(UINT16 position);
 
-
 // Yep... these are all globals. Limited memory, gameboy, poor compiler support for local vars, etc.
 // If this is grossing you out, please stop thinking about it like C. Think about it like the assembly behind it,
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
-extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs;
+extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum;
 extern UINT16 temp16, playerWorldTileStart, temp16b;
 extern UBYTE temp1, temp2, temp3, temp4, temp5;
 extern struct SPRITE sprites[6];
