@@ -4,7 +4,8 @@
 #include <gb/gb.h>
 #include "sprite.h"
 
-#define START_LEVEL 2U
+#define START_LEVEL 4U
+#define LAST_LEVEL 4U
 
 #define GAME_STATE_RUNNING 0U
 #define GAME_STATE_PAUSED 1U
@@ -55,8 +56,6 @@
 #define STATUS_BAR_HEIGHT 16U
 
 #define SPRITE_OFFSCREEN 0xEF
-
-#define LAST_LEVEL 2U
 
 extern UBYTE base_tiles[];
 extern UBYTE base_sprites[];
