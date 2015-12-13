@@ -145,7 +145,12 @@ void do_player_movey_stuff() {
 					turn_x_y_to_tile(temp1+spriteSize, temp2+spriteSize);
 					if (temp16 == temp16b) {
 						// You're in. Barf bags are available to your left.
-						gameState = GAME_STATE_WINNER; // Haha, you win, so you lose. FORGET YOU!! :D
+						currentLevelNum++;
+						if (currentLevelNum > LAST_LEVEL) {
+							gameState = GAME_STATE_WINNER; // Haha, you win, so you lose. FORGET YOU!! :D
+						} else {
+							gameState = GAME_STATE_LOAD;
+						}
 						return; // Run away!
 					}
 				}
@@ -335,5 +340,19 @@ void move_sprites_for_load() {
 	// Leaving room for 4 sprite... sprites, but for now, we'll just use the first.
 	set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2U), ENEMY_SPRITE_START + (sprites[temp2].type << 2U));
 	move_sprite(WORLD_SPRITE_START + (temp2 << 2U), sprites[temp2].x, sprites[temp2].y);
+
+}
+
+UBYTE get_collision_with_temp3() {
+	if (temp3 == WALKABLE_LOG_TILE) {
+		return !isMiniMode; // Tiny you can walk. Big you can't. GET STUCKED!!
+	}
+	if (temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
+		return isMiniMode;
+	}
+	if (temp3 > FIRST_SOLID_TILE - 1U) {
+		return 1;
+	}
+	return 0;
 
 }

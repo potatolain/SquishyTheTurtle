@@ -124,21 +124,16 @@ INT16 get_map_tile_base_position() {
 
 // Returns collision, and ALSO SETS temp3 to whatever was collided with.
 UINT16 test_collision(UBYTE x, UBYTE y) {
+	UBYTE temp;
 	// This offsets us by one tile to get us in line with 0-7= tile 0, 8-f = tile 1, etc...
 	x -= 8;
 	temp16 = playerWorldTileStart + (MAP_TILE_ROW_WIDTH * (((UINT16)y>>4U) - 1U)) + (((UINT16)x)>>4U);
 	temp3 = currentMap[temp16];
 	
-	if (temp3 == WALKABLE_LOG_TILE) {
-		return !isMiniMode; // Tiny you can walk. Big you can't. GET STUCKED!!
-	}
-	if (temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
-		return isMiniMode;
-	}
-	if (temp3 > FIRST_SOLID_TILE - 1U) {
-		return 1;
-	}
-	return 0;
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	temp = get_collision_with_temp3();
+	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
+	return temp;
 }
 
 void move_sprites() {
@@ -312,6 +307,11 @@ void main(void) {
 				SWITCH_ROM_MBC1(BANK_TITLE);
 				show_win_screen();
 				goto startOver;
+			case GAME_STATE_LOAD:
+				init_level();
+				load_map();
+				gameState = GAME_STATE_RUNNING;
+				break;
 		}
 		cycleCounter++;
 	}
