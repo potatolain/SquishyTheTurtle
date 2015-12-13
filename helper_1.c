@@ -126,6 +126,7 @@ void do_player_movey_stuff() {
 			gameState = GAME_STATE_GAME_OVER;
 			return;
 		}
+		
 		update_health();
 	}
 	

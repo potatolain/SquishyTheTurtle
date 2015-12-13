@@ -9,8 +9,8 @@
 
 // TODO: 
 // - Create levels
-// - Prevent picking up dupe eggs
 // - Animate exit
+// - SFX?
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
