@@ -90,6 +90,7 @@ void load_map() {
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	clear_extra_sprites();
+	update_egg();
 }
 
 UBYTE get_tile_at_pos(UINT16 position) {
@@ -268,6 +269,7 @@ void main_game_loop() {
 
 void init_level() {
 	SWITCH_ROM_MBC1(BANK_SPRITE_DATA);
+	currentEggs = 0U;
 	totalEggs = world_0_egg_counts[currentLevelNum];
 	playerX = world_0_x_start_positions[currentLevelNum];
 	playerY = world_0_y_start_positions[currentLevelNum];
