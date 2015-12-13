@@ -29,25 +29,11 @@ UBYTE buffer[20U];
 UINT16 playerWorldTileStart, temp16;
 UBYTE* currentMap;
 UBYTE* tempPointer; 
+enum SPRITE_DIRECTION playerDirection;
 // Pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to...
 UBYTE* * * currentMapSprites;
 
 struct SPRITE sprites[6];
-void init_vars() {
-	isMiniMode = 1U;
-	playerWorldPos = 0U;
-	playerWorldTileStart = get_map_tile_base_position();
-	currentMap = world_0;
-	currentMapSprites = world_0_sprites;
-	btns = oldBtns = 0U;
-	playerXVel = playerYVel = 0U;
-	spriteSize = 8U;
-	
-	playerX = playerY = 36U;
-	playerHealth = 5U;
-	gameState = GAME_STATE_RUNNING;
-	playerVelocityLock = 0U;
-}
 
 void load_map() {
 	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
@@ -93,16 +79,8 @@ void load_map() {
 		temp2++;
 	}
 	
-	while (temp2 != MAX_SPRITES) {
-		// Fill in the rest -- both in actual sprites and in our structs.
-		for (i = 0U; i < 4U; i++)
-			move_sprite(WORLD_SPRITE_START + (temp2 << 2U) + i, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
-		
-		sprites[temp2].type = SPRITE_TYPE_NONE;
-		sprites[temp2].x = sprites[temp2].y = SPRITE_OFFSCREEN;
-		sprites[temp2].size = 0U;
-		temp2++;
-	}
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	clear_extra_sprites();
 }
 
 void init_screen() {
@@ -114,23 +92,11 @@ void init_screen() {
 	set_bkg_data(0U, 128U, base_tiles);
 	set_win_data(0U, 128U, base_tiles);
 	set_sprite_data(0U, 64U, base_sprites);
-	scroll_bkg(0U, 0U);
-	SPRITES_8x8;
-	
-	// Main char is first 4 sprites. (Though sometimse 1 will be used...)
-	for (i = 0U; i < 4U; i++) 
-		set_sprite_tile(i, i);
-	
+
 	load_map();
-
-	SHOW_BKG;
-	SHOW_SPRITES;
-
-	move_win(0, 128);
-	SHOW_WIN;
 	
-	DISPLAY_ON;
-	enable_interrupts();
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	finish_init_screen();
 }
 
 // Get the position of the top left corner of a room on the map.
@@ -165,27 +131,10 @@ void move_sprites() {
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	directionalize_sprites();
 	
-	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
 	if (sprites[temp1].direction == SPRITE_DIRECTION_STOP)
 		return;
-	temp4 = sprites[temp1].x;
-	temp5 = sprites[temp1].y;
-
-	switch (sprites[temp1].direction) {
-		case SPRITE_DIRECTION_LEFT: 
-			temp4 -= SPIDER_SPEED;
-			break;
-		case SPRITE_DIRECTION_RIGHT:
-			temp4 += SPIDER_SPEED;
-			break;
-		case SPRITE_DIRECTION_UP:
-			temp5 -= SPIDER_SPEED;
-			break;
-		case SPRITE_DIRECTION_DOWN:
-			temp5 += SPIDER_SPEED;
-			break;
-	}
 	
+	SWITCH_ROM_MBC1(BANK_WORLD_DATA);	
 	// Now, we test collision with our temp4 and temp5
 	if (sprites[temp1].direction == SPRITE_DIRECTION_LEFT || sprites[temp1].direction == SPRITE_DIRECTION_RIGHT) {
 		if (temp4+sprites[temp1].size >= SCREEN_WIDTH || temp4 <= 4U) {
@@ -219,9 +168,6 @@ void move_sprites() {
 		}
 	}
 	
-	SWITCH_ROM_MBC1(BANK_HELPER_1);
-	test_sprite_collision();
-
 	// Okay, you can move.
 	sprites[temp1].x = temp4;
 	sprites[temp1].y = temp5;
@@ -238,6 +184,10 @@ void main_game_loop() {
 	oldBtns = btns;
 	btns = joypad();
 	handle_input();
+	
+	if (!playerVelocityLock) {
+		test_sprite_collision();
+	}
 	
 	move_sprites();
 	
@@ -301,7 +251,10 @@ void main_game_loop() {
 
 void main(void) {
 	startOver:
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	init_vars();
+	currentMap = world_0;
+	currentMapSprites = world_0_sprites;
 	
 	SWITCH_ROM_MBC1(BANK_TITLE);
 	show_title();

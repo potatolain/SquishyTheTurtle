@@ -10,7 +10,7 @@
 #define GAME_STATE_GAME_OVER 3U
 
 #define SPRITE_SMALL 0
-#define SPRITE_BIG 4
+#define SPRITE_BIG 8
 #define FIRST_SOLID_TILE 7U
 #define FIRST_WATER_TILE 8U
 #define FIRST_LOG_TILE 15U
@@ -57,8 +57,11 @@ INT16 get_map_tile_base_position();
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
 extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter;
-extern UINT16 temp16;
+extern UINT16 temp16, playerWorldTileStart;
 extern UBYTE temp1, temp2, temp3, temp4, temp5;
 extern struct SPRITE sprites[6];
+extern enum SPRITE_DIRECTION playerDirection;
+extern UBYTE* currentMap;
+extern UBYTE * * * currentMapSprites;
 
 #endif

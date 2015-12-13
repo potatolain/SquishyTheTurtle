@@ -7,4 +7,7 @@
 	void do_player_movey_stuff();
 	void directionalize_sprites();
 	void test_sprite_collision();
+	void clear_extra_sprites();
+	void init_vars();
+	void finish_init_screen();
 #endif

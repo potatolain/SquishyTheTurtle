@@ -10,15 +10,21 @@ void handle_input() {
 	if (!playerVelocityLock) {
 		playerXVel = playerYVel = 0;
 
-		if (btns & J_UP)
+		if (btns & J_UP) {
 			playerYVel = -PLAYER_MOVE_DISTANCE;
-		else if (btns & J_DOWN)
+			playerDirection = SPRITE_DIRECTION_UP;
+		} else if (btns & J_DOWN) {
 			playerYVel = PLAYER_MOVE_DISTANCE;
+			playerDirection = SPRITE_DIRECTION_DOWN;
+		}
 		
-		if (btns & J_LEFT)
+		if (btns & J_LEFT) {
 			playerXVel = -PLAYER_MOVE_DISTANCE;
-		else if (btns & J_RIGHT)
+			playerDirection = SPRITE_DIRECTION_LEFT;
+		} else if (btns & J_RIGHT) {
 			playerXVel = PLAYER_MOVE_DISTANCE;
+			playerDirection = SPRITE_DIRECTION_RIGHT;
+		}
 		
 		if (!(oldBtns & J_A) && btns & J_A) {
 			isMiniMode = !isMiniMode;
@@ -26,10 +32,15 @@ void handle_input() {
 				playerX += 4U;
 				playerY += 4U;
 				spriteSize = 8U;
+				// HACK: Manually set the sprite for our newly tinied turtle. We aren't moving, so this won't happen automatically.
+				set_sprite_tile(0, 0);
 			} else {
 				playerX -= 4U;
 				playerY -= 4U;
 				spriteSize = 16U;
+				// HACK: See above, we need it here too.
+				for (i = 0; i < 4; i++)
+					set_sprite_tile(i, SPRITE_BIG+i);
 			}
 		}
 	}
@@ -111,11 +122,13 @@ void do_player_movey_stuff() {
 			move_sprite(0U, playerX, playerY);
 		for (i = 1; i != 4U; i++)
 			move_sprite(i, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
-		set_sprite_tile(0, ((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)); // HACK: We know this is 0, so don't add a base # to it.
+		if (playerXVel + playerYVel != 0)
+			set_sprite_tile(0, ((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT) + ((playerDirection-1)<<1)); // HACK: We know this is 0, so don't add a base # to it.
 	} else {
 		for (i = 0U; i != 4U; i++) {
 			move_sprite(i, playerX + (i/2U)*8U, playerY + (i%2U)*8U);
-			set_sprite_tile(i, SPRITE_BIG + (((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)*4)+i);
+			if (playerXVel + playerYVel != 0U)
+				set_sprite_tile(i, SPRITE_BIG + (((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)<<2U) + ((playerDirection-1U)<<3U) + i);
 		}
 	}
 	
@@ -150,9 +163,94 @@ void directionalize_sprites() {
 		}
 		sprites[temp1].direction = temp3;
 	}
+	
+	temp4 = sprites[temp1].x;
+	temp5 = sprites[temp1].y;
 
+	switch (sprites[temp1].direction) {
+		case SPRITE_DIRECTION_LEFT: 
+			temp4 -= SPIDER_SPEED;
+			break;
+		case SPRITE_DIRECTION_RIGHT:
+			temp4 += SPIDER_SPEED;
+			break;
+		case SPRITE_DIRECTION_UP:
+			temp5 -= SPIDER_SPEED;
+			break;
+		case SPRITE_DIRECTION_DOWN:
+			temp5 += SPIDER_SPEED;
+			break;
+	}
 }
 
 void test_sprite_collision() {
-	return;
+	for (i = 0U; i < MAX_SPRITES; i++) {
+		if (playerX < sprites[i].x + sprites[i].size && playerX + spriteSize > sprites[i].x && 
+				playerY < sprites[i].y + sprites[i].size && playerY + spriteSize > sprites[i].y) {
+			
+			playerHealth--;
+			if (playerHealth == 0) {
+				gameState = GAME_STATE_GAME_OVER;
+				return;
+			}
+
+			update_health();
+			playerVelocityLock = PLAYER_DAMAGE_TIME;
+			if (playerXVel == 0 && playerYVel == 0) {
+				playerYVel = PLAYER_MOVE_DISTANCE;
+			} else {
+				playerYVel = 0U-playerYVel;
+				playerXVel = 0U-playerXVel;
+			}
+			return;
+		}
+	}
+}
+
+void clear_extra_sprites() {
+	while (temp2 != MAX_SPRITES) {
+		// Fill in the rest -- both in actual sprites and in our structs.
+		for (i = 0U; i < 4U; i++)
+			move_sprite(WORLD_SPRITE_START + (temp2 << 2U) + i, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
+		
+		sprites[temp2].type = SPRITE_TYPE_NONE;
+		sprites[temp2].x = sprites[temp2].y = SPRITE_OFFSCREEN;
+		sprites[temp2].size = 0U;
+		temp2++;
+	}
+
+}
+
+void init_vars() {
+	isMiniMode = 1U;
+	playerWorldPos = 0U;
+	playerWorldTileStart = get_map_tile_base_position();
+	btns = oldBtns = 0U;
+	playerXVel = playerYVel = 0U;
+	spriteSize = 8U;
+	
+	playerX = playerY = 36U;
+	playerHealth = 5U;
+	gameState = GAME_STATE_RUNNING;
+	playerVelocityLock = 0U;
+
+}
+
+void finish_init_screen() {
+	scroll_bkg(0U, 0U);
+	SPRITES_8x8;
+	
+	// Main char is first 4 sprites. (Though sometimes 1 will be used...)
+	for (i = 0U; i < 4U; i++) 
+		set_sprite_tile(i, i);
+	
+	SHOW_BKG;
+	SHOW_SPRITES;
+
+	move_win(0, 128);
+	SHOW_WIN;
+	
+	DISPLAY_ON;
+	enable_interrupts();
+
 }
