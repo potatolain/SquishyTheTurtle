@@ -109,6 +109,7 @@ void pause_loop() {
 }
 
 void turn_x_y_to_tile(UBYTE x, UBYTE y) {
+	x -= 8;
 	temp16 = playerWorldTileStart + (MAP_TILE_ROW_WIDTH * (((UINT16)y>>4U) - 1U)) + (((UINT16)x)>>4U);
 }
 
@@ -231,6 +232,11 @@ void test_sprite_collision() {
 			
 			if (sprites[i].type == SPRITE_TYPE_EGG) {
 				currentEggs++;
+				// update egg positions
+				temp5 = 1;
+				temp5 >>= (playerWorldPos % 8);
+				eggStatus[playerWorldPos/8] = eggStatus[playerWorldPos/8] | temp5;
+				
 				sprites[i].x = SPRITE_OFFSCREEN;
 				sprites[i].y = SPRITE_OFFSCREEN;
 				update_egg();
@@ -283,6 +289,8 @@ void init_vars() {
 	gameState = GAME_STATE_RUNNING;
 	playerVelocityLock = 0U;
 	currentEggs = 0U;
+	for (i = 0; i < 13; i++)
+		eggStatus[i] = 0;
 
 }
 
@@ -304,5 +312,17 @@ void finish_init_screen() {
 	
 	DISPLAY_ON;
 	enable_interrupts();
+
+}
+
+void test_for_egg() {
+	if (sprites[temp2].type == SPRITE_TYPE_EGG) {
+		temp5 = 1U;
+		temp5 >>= (playerWorldPos % 8);
+		if (eggStatus[playerWorldPos/8] & temp5) {
+			sprites[temp2].x = sprites[temp2].y = SPRITE_OFFSCREEN;
+			sprites[temp2].type = SPRITE_TYPE_NONE;
+		}
+	}
 
 }

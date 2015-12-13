@@ -11,7 +11,6 @@
 // - Create levels
 // - Prevent picking up dupe eggs
 // - Animate exit
-// - Create exit.
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
@@ -78,7 +77,11 @@ void load_map() {
 		sprites[temp2].size = 8U;
 
 		sprites[temp2].type = tempPointer++[0];
-				
+		// Annihilate eggs we've already fetched.
+		SWITCH_ROM_MBC1(BANK_HELPER_1);
+		test_for_egg();
+		SWITCH_ROM_MBC1(BANK_SPRITE_DATA);
+		
 		// Apply it to some real-world sprites too!
 		// Leaving room for 4 sprite... sprites, but for now, we'll just use the first.
 		set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2U), ENEMY_SPRITE_START + (sprites[temp2].type << 2U));

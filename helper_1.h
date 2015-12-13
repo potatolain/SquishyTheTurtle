@@ -11,4 +11,5 @@
 	void init_vars();
 	void finish_init_screen();
 	void update_egg();
+	void test_for_egg();
 #endif

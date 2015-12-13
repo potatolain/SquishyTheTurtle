@@ -70,5 +70,6 @@ extern struct SPRITE sprites[6];
 extern enum SPRITE_DIRECTION playerDirection;
 extern UBYTE* currentMap;
 extern UBYTE * * * currentMapSprites;
+extern UBYTE eggStatus[];
 
 #endif
