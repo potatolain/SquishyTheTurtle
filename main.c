@@ -219,7 +219,7 @@ void main_game_loop() {
 			playerWorldPos++;
 			load_map();
 			return;
-		} else if (temp1 <= 4U) {
+		} else if (temp1 <= 8U) {
 			playerX = SCREEN_WIDTH - spriteSize - PLAYER_MOVE_DISTANCE_FAST;
 			playerWorldPos--;
 			load_map();
@@ -243,7 +243,7 @@ void main_game_loop() {
 			playerWorldPos += 10U;
 			load_map();
 			return;
-		} else if (temp2 <= 4U) {
+		} else if (temp2 <= 8U) {
 			playerY = (SCREEN_HEIGHT - STATUS_BAR_HEIGHT) - PLAYER_MOVE_DISTANCE_FAST;
 			playerWorldPos -= 10U;
 			load_map();

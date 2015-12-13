@@ -243,7 +243,7 @@ void test_sprite_collision() {
 				currentEggs++;
 				// update egg positions
 				temp5 = 1;
-				temp5 >>= (playerWorldPos % 8);
+				temp5 <<= (playerWorldPos % 8);
 				eggStatus[playerWorldPos/8] = eggStatus[playerWorldPos/8] | temp5;
 				
 				sprites[i].x = SPRITE_OFFSCREEN;
@@ -297,7 +297,7 @@ void init_vars() {
 	gameState = GAME_STATE_RUNNING;
 	playerVelocityLock = 0U;
 	currentEggs = 0U;
-	currentLevelNum = 0U;
+	currentLevelNum = START_LEVEL;
 	for (i = 0; i < 13; i++)
 		eggStatus[i] = 0;
 
@@ -327,7 +327,7 @@ void finish_init_screen() {
 void test_for_egg() {
 	if (sprites[temp2].type == SPRITE_TYPE_EGG) {
 		temp5 = 1U;
-		temp5 >>= (playerWorldPos % 8);
+		temp5 <<= (playerWorldPos % 8);
 		if (eggStatus[playerWorldPos/8] & temp5) {
 			sprites[temp2].x = sprites[temp2].y = SPRITE_OFFSCREEN;
 			sprites[temp2].type = SPRITE_TYPE_NONE;
