@@ -11,8 +11,9 @@
 // - Create levels
 // - Animate exit
 // - SFX?
-// - Fix weird movement up/down
 // - 4th enemy... funky huge rabbit
+// - Tell people how to play this stupid thing.
+// - Make the spider not look like butt.
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
