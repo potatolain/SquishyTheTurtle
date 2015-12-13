@@ -6,6 +6,7 @@ void show_title() {
 	disable_interrupts();
 	DISPLAY_OFF;
 	HIDE_SPRITES;
+	HIDE_WIN;
 			
 	// This is exceedingly lazy/poor use of ROM space... It's one bank, and this is an example program. Deal with it.
 	set_bkg_data(0U, 128U, title_tiles);
@@ -28,6 +29,7 @@ void show_game_over() {
 	disable_interrupts();
 	DISPLAY_OFF;
 	HIDE_SPRITES;
+	HIDE_WIN;
 			
 	// This is exceedingly lazy/poor use of ROM space... It's one bank, and this is an example program. Deal with it.
 	set_bkg_data(0U, 128U, title_tiles);

@@ -82,6 +82,18 @@ void update_health() {
 	set_win_tiles(1U, 0U, 20U, 1U, buffer);
 
 }
+void update_egg() {
+	// Overkill? nah...
+	buffer[0] = EGG_TILE;
+	buffer[1] = E_TILE;
+	buffer[2] = G_TILE;
+	buffer[3] = G_TILE;
+	buffer[4] = BLANK_TILE;
+	buffer[5] = (UBYTE)(NUMERIC_TILE+currentEggs);
+	buffer[6] = SLASH_TILE;
+	buffer[7] = (UBYTE)(NUMERIC_TILE+totalEggs);
+	set_win_tiles(12U, 1U, 8U, 1U, buffer);
+}
 
 void pause_loop() {
 	
@@ -139,47 +151,52 @@ void do_player_movey_stuff() {
 
 void directionalize_sprites() {
 	// Kind of bizarre, but it gives us a good variation.
-	if (cycleCounter % 60U < MAX_SPRITES) {
-		temp3 = rand() % 32U;
-		if (temp3 > SPRITE_DIRECTION_DOWN) {
-			if (temp3 < 9) {
-				temp3 = SPRITE_DIRECTION_STOP;
-			} else if (temp3 < 21) {
-				temp4 = playerX + (spriteSize/2U);
-				temp5 = sprites[temp1].x + (sprites[temp1].size/2U);
-				if (temp4 < temp5)
-					temp3 = isMiniMode ? SPRITE_DIRECTION_LEFT : SPRITE_DIRECTION_RIGHT;
-				else
-					temp3 = isMiniMode ? SPRITE_DIRECTION_RIGHT : SPRITE_DIRECTION_LEFT;
-			} else {
-				temp4 = playerY + (spriteSize/2U);
-				temp5 = sprites[temp1].y + (sprites[temp1].size/2U);
-				if (temp4 < temp5)
-					temp3 = isMiniMode ? SPRITE_DIRECTION_UP : SPRITE_DIRECTION_DOWN;
-				else
-					temp3 = isMiniMode ? SPRITE_DIRECTION_DOWN : SPRITE_DIRECTION_UP;
+	if (sprites[temp1].type != SPRITE_TYPE_EGG) { // Eggs can bug right off!
+		if (cycleCounter % 60U < MAX_SPRITES) {
+			temp3 = rand() % 32U;
+			if (temp3 > SPRITE_DIRECTION_DOWN) {
+				if (temp3 < 9) {
+					temp3 = SPRITE_DIRECTION_STOP;
+				} else if (temp3 < 21) {
+					temp4 = playerX + (spriteSize/2U);
+					temp5 = sprites[temp1].x + (sprites[temp1].size/2U);
+					if (temp4 < temp5)
+						temp3 = isMiniMode ? SPRITE_DIRECTION_LEFT : SPRITE_DIRECTION_RIGHT;
+					else
+						temp3 = isMiniMode ? SPRITE_DIRECTION_RIGHT : SPRITE_DIRECTION_LEFT;
+				} else {
+					temp4 = playerY + (spriteSize/2U);
+					temp5 = sprites[temp1].y + (sprites[temp1].size/2U);
+					if (temp4 < temp5)
+						temp3 = isMiniMode ? SPRITE_DIRECTION_UP : SPRITE_DIRECTION_DOWN;
+					else
+						temp3 = isMiniMode ? SPRITE_DIRECTION_DOWN : SPRITE_DIRECTION_UP;
 
+				}
 			}
+			sprites[temp1].direction = temp3;
 		}
-		sprites[temp1].direction = temp3;
-	}
-	
-	temp4 = sprites[temp1].x;
-	temp5 = sprites[temp1].y;
+		
+		temp4 = sprites[temp1].x;
+		temp5 = sprites[temp1].y;
 
-	switch (sprites[temp1].direction) {
-		case SPRITE_DIRECTION_LEFT: 
-			temp4 -= SPIDER_SPEED;
-			break;
-		case SPRITE_DIRECTION_RIGHT:
-			temp4 += SPIDER_SPEED;
-			break;
-		case SPRITE_DIRECTION_UP:
-			temp5 -= SPIDER_SPEED;
-			break;
-		case SPRITE_DIRECTION_DOWN:
-			temp5 += SPIDER_SPEED;
-			break;
+		switch (sprites[temp1].direction) {
+			case SPRITE_DIRECTION_LEFT: 
+				temp4 -= SPIDER_SPEED;
+				break;
+			case SPRITE_DIRECTION_RIGHT:
+				temp4 += SPIDER_SPEED;
+				break;
+			case SPRITE_DIRECTION_UP:
+				temp5 -= SPIDER_SPEED;
+				break;
+			case SPRITE_DIRECTION_DOWN:
+				temp5 += SPIDER_SPEED;
+				break;
+		}
+	} else {
+		temp4 = sprites[temp1].x;
+		temp5 = sprites[temp1].y;
 	}
 }
 
@@ -188,21 +205,29 @@ void test_sprite_collision() {
 		if (playerX < sprites[i].x + sprites[i].size && playerX + spriteSize > sprites[i].x && 
 				playerY < sprites[i].y + sprites[i].size && playerY + spriteSize > sprites[i].y) {
 			
-			playerHealth--;
-			if (playerHealth == 0) {
-				gameState = GAME_STATE_GAME_OVER;
+			if (sprites[i].type == SPRITE_TYPE_EGG) {
+				currentEggs++;
+				sprites[i].x = SPRITE_OFFSCREEN;
+				sprites[i].y = SPRITE_OFFSCREEN;
+				update_egg();
+				return;
+			} else {
+				playerHealth--;
+				if (playerHealth == 0) {
+					gameState = GAME_STATE_GAME_OVER;
+					return;
+				}
+
+				update_health();
+				playerVelocityLock = PLAYER_DAMAGE_TIME;
+				if (playerXVel == 0 && playerYVel == 0) {
+					playerYVel = PLAYER_MOVE_DISTANCE;
+				} else {
+					playerYVel = 0U-playerYVel;
+					playerXVel = 0U-playerXVel;
+				}
 				return;
 			}
-
-			update_health();
-			playerVelocityLock = PLAYER_DAMAGE_TIME;
-			if (playerXVel == 0 && playerYVel == 0) {
-				playerYVel = PLAYER_MOVE_DISTANCE;
-			} else {
-				playerYVel = 0U-playerYVel;
-				playerXVel = 0U-playerXVel;
-			}
-			return;
 		}
 	}
 }
@@ -233,10 +258,13 @@ void init_vars() {
 	playerHealth = 5U;
 	gameState = GAME_STATE_RUNNING;
 	playerVelocityLock = 0U;
+	currentEggs = 0U;
 
 }
 
 void finish_init_screen() {
+	update_egg();
+	
 	scroll_bkg(0U, 0U);
 	SPRITES_8x8;
 	

@@ -10,4 +10,5 @@
 	void clear_extra_sprites();
 	void init_vars();
 	void finish_init_screen();
+	void update_egg();
 #endif

@@ -23,6 +23,11 @@
 #define HEART_TILE 96U
 #define PAUSE_TILE 91U
 #define DASH_TILE 90U
+#define E_TILE 95U
+#define G_TILE 97U
+#define EGG_TILE 109U
+#define SLASH_TILE 108U
+#define NUMERIC_TILE 98U
 
 #define PLAYER_ANIM_INTERVAL 0x08U // %00000100
 #define PLAYER_ANIM_SHIFT 3U
@@ -56,7 +61,7 @@ INT16 get_map_tile_base_position();
 // If this is grossing you out, please stop thinking about it like C. Think about it like the assembly behind it,
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
-extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter;
+extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs;
 extern UINT16 temp16, playerWorldTileStart;
 extern UBYTE temp1, temp2, temp3, temp4, temp5;
 extern struct SPRITE sprites[6];
