@@ -11,18 +11,18 @@ void handle_input() {
 		playerXVel = playerYVel = 0;
 
 		if (btns & J_UP) {
-			playerYVel = -PLAYER_MOVE_DISTANCE;
+			playerYVel = isMiniMode ? -PLAYER_MOVE_DISTANCE_FAST : -PLAYER_MOVE_DISTANCE_SLOW;
 			playerDirection = SPRITE_DIRECTION_UP;
 		} else if (btns & J_DOWN) {
-			playerYVel = PLAYER_MOVE_DISTANCE;
+			playerYVel = isMiniMode ? PLAYER_MOVE_DISTANCE_FAST : PLAYER_MOVE_DISTANCE_SLOW;
 			playerDirection = SPRITE_DIRECTION_DOWN;
 		}
 		
 		if (btns & J_LEFT) {
-			playerXVel = -PLAYER_MOVE_DISTANCE;
+			playerXVel = isMiniMode ? -PLAYER_MOVE_DISTANCE_FAST : -PLAYER_MOVE_DISTANCE_SLOW;
 			playerDirection = SPRITE_DIRECTION_LEFT;
 		} else if (btns & J_RIGHT) {
-			playerXVel = PLAYER_MOVE_DISTANCE;
+			playerXVel = isMiniMode ? PLAYER_MOVE_DISTANCE_FAST : PLAYER_MOVE_DISTANCE_SLOW;
 			playerDirection = SPRITE_DIRECTION_RIGHT;
 		}
 		
@@ -252,7 +252,7 @@ void test_sprite_collision() {
 				update_health();
 				playerVelocityLock = PLAYER_DAMAGE_TIME;
 				if (playerXVel == 0 && playerYVel == 0) {
-					playerYVel = PLAYER_MOVE_DISTANCE;
+					playerYVel = PLAYER_MOVE_DISTANCE_FAST;
 				} else {
 					playerYVel = 0U-playerYVel;
 					playerXVel = 0U-playerXVel;

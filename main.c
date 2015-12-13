@@ -11,6 +11,8 @@
 // - Create levels
 // - Animate exit
 // - SFX?
+// - Fix weird movement up/down
+// - 4th enemy... funky huge rabbit
 
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
@@ -222,17 +224,17 @@ void main_game_loop() {
 	temp3 = 0U;
 	if (playerXVel != 0) {
 		if (temp1+spriteSize >= SCREEN_WIDTH) {
-			playerX = 8U + PLAYER_MOVE_DISTANCE;
+			playerX = 8U + PLAYER_MOVE_DISTANCE_FAST;
 			playerWorldPos++;
 			load_map();
 			return;
 		} else if (temp1 <= 4U) {
-			playerX = SCREEN_WIDTH - spriteSize - PLAYER_MOVE_DISTANCE;
+			playerX = SCREEN_WIDTH - spriteSize - PLAYER_MOVE_DISTANCE_FAST;
 			playerWorldPos--;
 			load_map();
 			return;
 		} else {
-			if (playerXVel == PLAYER_MOVE_DISTANCE) {
+			if (playerXVel <= PLAYER_MOVE_DISTANCE_FAST) {
 				if (test_collision(temp1+spriteSize, temp2) || test_collision(temp1+spriteSize, temp2+spriteSize)) {
 					temp1 = playerX;
 				}
@@ -246,17 +248,17 @@ void main_game_loop() {
 	
 	if (playerYVel != 0) {
 		if (temp2+spriteSize >= SCREEN_HEIGHT) {
-			playerY = spriteSize + PLAYER_MOVE_DISTANCE;
+			playerY = spriteSize + PLAYER_MOVE_DISTANCE_FAST;
 			playerWorldPos += 10U;
 			load_map();
 			return;
 		} else if (temp2 <= 4U) {
-			playerY = (SCREEN_HEIGHT - STATUS_BAR_HEIGHT) - PLAYER_MOVE_DISTANCE;
+			playerY = (SCREEN_HEIGHT - STATUS_BAR_HEIGHT) - PLAYER_MOVE_DISTANCE_FAST;
 			playerWorldPos -= 10U;
 			load_map();
 			return;
 		} else {
-			if (playerYVel == PLAYER_MOVE_DISTANCE) {
+			if (playerYVel <= PLAYER_MOVE_DISTANCE_FAST) {
 				if (test_collision(temp1, temp2+spriteSize) || test_collision(temp1+spriteSize, temp2+spriteSize)) {
 					temp2 = playerY;
 				}
