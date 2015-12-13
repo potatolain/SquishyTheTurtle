@@ -7,11 +7,6 @@
 #include <gb/gb.h>
 #include <rand.h>
 
-// TODO LIST
-// 1. Figure out the write exception on every startup in bgb. (Saving grace: Real hardware doesn't seem to care.)
-// 2. Title this thing. Stretchy the turtle??
-// 5. Make it not look stupid when you grow next to a wall.
-
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
 #define BANK_HELPER_1 3U
