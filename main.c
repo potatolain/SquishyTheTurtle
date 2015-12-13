@@ -7,6 +7,12 @@
 #include <gb/gb.h>
 #include <rand.h>
 
+// TODO: 
+// - Create levels
+// - Prevent picking up dupe eggs
+// - Animate exit
+// - Create exit.
+
 #define BANK_GRAPHICS 1U
 #define BANK_WORLD_DATA 2U
 #define BANK_HELPER_1 3U
@@ -21,7 +27,8 @@ UBYTE temp1, temp2, temp3, temp4, temp5;
 UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs;
 UBYTE playerHealth;
 UBYTE buffer[20U];
-UINT16 playerWorldTileStart, temp16;
+UBYTE eggStatus[13U]; // 1 bit per tile... 
+UINT16 playerWorldTileStart, temp16, temp16b;
 UBYTE* currentMap;
 UBYTE* tempPointer; 
 enum SPRITE_DIRECTION playerDirection;
@@ -32,6 +39,9 @@ struct SPRITE sprites[6];
 
 void load_map() {
 	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
+	currentMap = world_0;
+	currentMapSprites = world_0_sprites;
+
 	playerWorldTileStart = get_map_tile_base_position();
 	
 	// This is efficient. I swear! NOT AT ALL AWFUL. IN ANY WAY. NOPE.
@@ -52,6 +62,8 @@ void load_map() {
 	
 	
 	SWITCH_ROM_MBC1(BANK_SPRITE_DATA);
+	totalEggs = world_0_data[0];
+
 	tempPointer = currentMapSprites[playerWorldPos];
 	temp1 = 0x00; // Generic data
 	temp2 = 0U; // Position
@@ -76,6 +88,14 @@ void load_map() {
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	clear_extra_sprites();
+}
+
+UBYTE get_tile_at_pos(UINT16 position) {
+	UBYTE temp;
+	SWITCH_ROM_MBC1(BANK_WORLD_DATA);
+	temp = currentMap[position];
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	return temp;
 }
 
 void init_screen() {
@@ -255,9 +275,6 @@ void main(void) {
 	startOver:
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	init_vars();
-	currentMap = world_0;
-	currentMapSprites = world_0_sprites;
-	totalEggs = 1U; // FIXME: BAD DINOSAUR. NO COOKIE. EAT YOUR BRUSSEL SPROUTS!!
 	
 	SWITCH_ROM_MBC1(BANK_TITLE);
 	show_title();

@@ -2,4 +2,5 @@
 #define WORLD_0_SPRITES
 #include <gb/gb.h>
 extern const UBYTE* world_0_sprites[];
+extern const UBYTE world_0_data[];
 #endif

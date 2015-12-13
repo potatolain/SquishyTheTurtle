@@ -28,6 +28,7 @@
 #define EGG_TILE 109U
 #define SLASH_TILE 108U
 #define NUMERIC_TILE 98U
+#define TELEPORTER_TILE 5U
 
 #define PLAYER_ANIM_INTERVAL 0x08U // %00000100
 #define PLAYER_ANIM_SHIFT 3U
@@ -55,6 +56,7 @@ extern UBYTE buffer[20U];
 extern UINT16 sys_time;
 
 INT16 get_map_tile_base_position();
+UBYTE get_tile_at_pos(UINT16 position);
 
 
 // Yep... these are all globals. Limited memory, gameboy, poor compiler support for local vars, etc.
@@ -62,7 +64,7 @@ INT16 get_map_tile_base_position();
 // and also keep in mind that we're working in a very limited system. Tricks will be necessary.
 extern UBYTE i, j;
 extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs;
-extern UINT16 temp16, playerWorldTileStart;
+extern UINT16 temp16, playerWorldTileStart, temp16b;
 extern UBYTE temp1, temp2, temp3, temp4, temp5;
 extern struct SPRITE sprites[6];
 extern enum SPRITE_DIRECTION playerDirection;

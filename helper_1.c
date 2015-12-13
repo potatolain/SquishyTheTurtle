@@ -108,6 +108,10 @@ void pause_loop() {
 	wait_vbl_done();
 }
 
+void turn_x_y_to_tile(UBYTE x, UBYTE y) {
+	temp16 = playerWorldTileStart + (MAP_TILE_ROW_WIDTH * (((UINT16)y>>4U) - 1U)) + (((UINT16)x)>>4U);
+}
+
 void do_player_movey_stuff() {
 	// temp3 will be anything we might have collided with.
 	if (isMiniMode && temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
@@ -122,6 +126,26 @@ void do_player_movey_stuff() {
 			return;
 		}
 		update_health();
+	}
+	
+	// Gross, stinky check to see if we're entirely within the teleporter tile.
+	if (isMiniMode && currentEggs >= totalEggs) {
+		turn_x_y_to_tile(temp1, temp2);
+		temp16b = temp16;
+		if (get_tile_at_pos(temp16) == TELEPORTER_TILE) {
+			turn_x_y_to_tile(temp1+spriteSize, temp2);
+			if (temp16 == temp16b) {
+				turn_x_y_to_tile(temp1, temp2+spriteSize);
+				if (temp16 == temp16b) {
+					turn_x_y_to_tile(temp1+spriteSize, temp2+spriteSize);
+					if (temp16 == temp16b) {
+						// You're in. Barf bags are available to your left.
+						gameState = GAME_STATE_GAME_OVER; // Haha, you win, so you lose. FORGET YOU!! :D
+						return; // Run away!
+					}
+				}
+			}
+		}
 	}
 	
 	playerX = temp1;
