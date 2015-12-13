@@ -301,6 +301,10 @@ void main(void) {
 				SWITCH_ROM_MBC1(BANK_TITLE);
 				show_game_over();
 				goto startOver; // FREEDOM!!!!!!!! Start over.
+			case GAME_STATE_WINNER:
+				SWITCH_ROM_MBC1(BANK_TITLE);
+				show_win_screen();
+				goto startOver;
 		}
 		cycleCounter++;
 	}

@@ -141,7 +141,7 @@ void do_player_movey_stuff() {
 					turn_x_y_to_tile(temp1+spriteSize, temp2+spriteSize);
 					if (temp16 == temp16b) {
 						// You're in. Barf bags are available to your left.
-						gameState = GAME_STATE_GAME_OVER; // Haha, you win, so you lose. FORGET YOU!! :D
+						gameState = GAME_STATE_WINNER; // Haha, you win, so you lose. FORGET YOU!! :D
 						return; // Run away!
 					}
 				}
