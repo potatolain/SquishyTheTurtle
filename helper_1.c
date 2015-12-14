@@ -444,8 +444,6 @@ void make_clear_level_noise() {
 }
 
 void make_egg_noise() {
-	make_player_hurt_noise();
-	return;
 	NR52_REG = 0x80;
 	NR51_REG = 0x11;
 	NR50_REG = 0x77;
