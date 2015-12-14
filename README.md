@@ -16,5 +16,7 @@ If you like it, you can vote for me on the ludum dare website: http://ludumdare.
 3. Open a terminal window in the root folder of the git repo.
 4. Type "make"
 
+**Note**: Windows users will need a few unix-replacement binaries, such as sed, grep, cat, etc. I used something called Gow, but Cygwin or git-bash will likely suffice.
+
 ## Try it
 Try it out on the Ludum Dare website, here: http://ludumdare.com/compo/ludum-dare-34/?action=preview&uid=15095
