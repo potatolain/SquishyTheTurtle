@@ -73,6 +73,8 @@ void handle_input() {
 			buffer[i] = BLANK_TILE;
 		
 		set_win_tiles(1U, 0U, 20U, 1U, buffer);
+		
+		make_pause_sound();
 	}
 	
 }
@@ -109,6 +111,7 @@ void pause_loop() {
 		gameState = GAME_STATE_RUNNING;
 		BGP_REG = 0xe4;
 		update_health();
+		make_unpause_sound();
 	}
 	wait_vbl_done();
 }
@@ -474,6 +477,30 @@ void make_grow_sound() {
 
 	NR10_REG = 0x36;
 	NR11_REG = 0x8b;
+	NR12_REG = 0xF3;
+	NR13_REG = 0x00;
+	NR14_REG = 0x87;
+}
+
+void make_pause_sound() {
+	NR52_REG = 0x80;
+	NR51_REG = 0x11;
+	NR50_REG = 0x77;
+
+	NR10_REG = 0x17;
+	NR11_REG = 0xF6;
+	NR12_REG = 0xF3;
+	NR13_REG = 0x00;
+	NR14_REG = 0x87;
+}
+
+void make_unpause_sound() {
+	NR52_REG = 0x80;
+	NR51_REG = 0x11;
+	NR50_REG = 0x77;
+
+	NR10_REG = 0x17;
+	NR11_REG = 0xF6;
 	NR12_REG = 0xF3;
 	NR13_REG = 0x00;
 	NR14_REG = 0x87;
