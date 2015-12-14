@@ -421,14 +421,13 @@ void move_enemy_sprite() {
 void make_player_hurt_noise() {
 	
 	NR52_REG = 0x80;
-	NR51_REG = 0x11;
+	NR51_REG = 0x88;
 	NR50_REG = 0x77;
 
-	NR10_REG = 0xFE;
-	NR44_REG = 0x10;
-	NR12_REG = 0xF3;
-	NR13_REG = 0x00;
-	NR14_REG = 0x87;
+	NR41_REG = 0x10;
+	NR42_REG = 0xe1; 
+	NR43_REG = 0x25;
+	NR44_REG = 0x87;
 }
 
 void make_clear_level_noise() {
@@ -445,8 +444,8 @@ void make_clear_level_noise() {
 }
 
 void make_egg_noise() {
-	//make_player_hurt_noise();
-	//return;
+	make_player_hurt_noise();
+	return;
 	NR52_REG = 0x80;
 	NR51_REG = 0x11;
 	NR50_REG = 0x77;
@@ -476,7 +475,7 @@ void make_grow_sound() {
 	NR50_REG = 0x77;
 
 	NR10_REG = 0x36;
-	NR11_REG = 0x8b; // 89
+	NR11_REG = 0x8b;
 	NR12_REG = 0xF3;
 	NR13_REG = 0x00;
 	NR14_REG = 0x87;
