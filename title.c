@@ -15,7 +15,8 @@ void show_title() {
 	
 	DISPLAY_ON;
 	enable_interrupts();
-
+	
+	waitpadup();
 	oldBtns = btns;
 	btns = joypad();
 	while (!(!(oldBtns & J_START) && btns & J_START)) {
@@ -40,6 +41,7 @@ void show_game_over() {
 	DISPLAY_ON;
 	enable_interrupts();
 
+	waitpadup();
 	oldBtns = btns;
 	btns = joypad();
 	while (!(!(oldBtns & J_START) && btns & J_START)) {
