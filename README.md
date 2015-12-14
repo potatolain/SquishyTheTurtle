@@ -1,4 +1,4 @@
-# SquishyTheTurtle
+# Squishy The Turtle
 
 ## About
 
