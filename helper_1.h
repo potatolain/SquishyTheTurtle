@@ -22,4 +22,6 @@
 	void make_egg_noise();
 	void make_shrink_sound();
 	void make_grow_sound();
+	void make_pause_sound();
+	void make_unpause_sound();
 #endif
