@@ -4,8 +4,8 @@
 #include <gb/gb.h>
 #include "sprite.h"
 
-#define START_LEVEL 5U // This should be 0, but flipping it around makes testing easier.
-#define LAST_LEVEL 5U
+#define START_LEVEL 0U // This should be 0, but flipping it around makes testing easier.
+#define LAST_LEVEL 7U
 
 #define GAME_STATE_RUNNING 0U
 #define GAME_STATE_PAUSED 1U

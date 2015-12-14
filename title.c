@@ -113,6 +113,7 @@ void show_win_screen() {
 	DISPLAY_ON;
 	enable_interrupts();
 
+	waitpadup();
 	oldBtns = btns;
 	btns = joypad();
 	while (!(!(oldBtns & J_START) && btns & J_START)) {
