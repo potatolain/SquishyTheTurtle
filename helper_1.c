@@ -37,6 +37,7 @@ void handle_input() {
 				spriteSize = 8U;
 				// HACK: Manually set the sprite for our newly tinied turtle. We aren't moving, so this won't happen automatically.
 				set_sprite_tile(0, 0);
+				make_shrink_sound();
 			} else {
 				playerX -= 4U;
 				playerY -= 4U;
@@ -44,6 +45,7 @@ void handle_input() {
 				// HACK: See above, we need it here too.
 				for (i = 0; i < 4; i++)
 					set_sprite_tile(i, SPRITE_BIG+i);
+				make_grow_sound();
 			}
 		}
 	}
@@ -129,7 +131,7 @@ void do_player_movey_stuff() {
 			gameState = GAME_STATE_GAME_OVER;
 			return;
 		}
-		
+		make_player_hurt_noise();
 		update_health();
 	}
 	
@@ -146,6 +148,7 @@ void do_player_movey_stuff() {
 					if (temp16 == temp16b) {
 						// You're in. Barf bags are available to your left.
 						currentLevelNum++;
+						make_clear_level_noise();
 						if (currentLevelNum > LAST_LEVEL) {
 							gameState = GAME_STATE_WINNER; // Haha, you win, so you lose. FORGET YOU!! :D
 						} else {
@@ -264,9 +267,11 @@ void test_sprite_collision() {
 				sprites[i].x = SPRITE_OFFSCREEN;
 				sprites[i].y = SPRITE_OFFSCREEN;
 				update_egg();
+				make_egg_noise();
 				return;
 			} else {
 				playerHealth--;
+				make_player_hurt_noise();
 				if (playerHealth == 0) {
 					gameState = GAME_STATE_GAME_OVER;
 					return;
@@ -411,4 +416,68 @@ void move_enemy_sprite() {
 		move_sprite(WORLD_SPRITE_START + (temp1 << 2U)+1U, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
 	}
 	
+}
+
+void make_player_hurt_noise() {
+	
+	NR52_REG = 0x80;
+	NR51_REG = 0x11;
+	NR50_REG = 0x77;
+
+	NR10_REG = 0xFE;
+	NR44_REG = 0x10;
+	NR12_REG = 0xF3;
+	NR13_REG = 0x00;
+	NR14_REG = 0x87;
+}
+
+void make_clear_level_noise() {
+	
+	NR52_REG = 0x80;
+	NR51_REG = 0x11;
+	NR50_REG = 0x77;
+
+	NR10_REG = 0x76;
+	NR11_REG = 0x10;
+	NR12_REG = 0xF3;
+	NR13_REG = 0x00;
+	NR14_REG = 0x87;
+}
+
+void make_egg_noise() {
+	//make_player_hurt_noise();
+	//return;
+	NR52_REG = 0x80;
+	NR51_REG = 0x11;
+	NR50_REG = 0x77;
+
+	NR10_REG = 0x16;
+	NR11_REG = 0x10;
+	NR12_REG = 0xF3;
+	NR13_REG = 0x00;
+	NR14_REG = 0x87;
+}
+
+void make_shrink_sound() {
+	NR52_REG = 0x80;
+	NR51_REG = 0x11;
+	NR50_REG = 0x77;
+
+	NR10_REG = 0x36;
+	NR11_REG = 0x10;
+	NR12_REG = 0xF3;
+	NR13_REG = 0x00;
+	NR14_REG = 0x87;
+}
+
+void make_grow_sound() {
+	NR52_REG = 0x80;
+	NR51_REG = 0x11;
+	NR50_REG = 0x77;
+
+	NR10_REG = 0x36;
+	NR11_REG = 0x8b; // 89
+	NR12_REG = 0xF3;
+	NR13_REG = 0x00;
+	NR14_REG = 0x87;
 }

@@ -17,4 +17,9 @@
 	void animate_exit();
 	void write_map_to_memory();
 	void move_enemy_sprite();
+	void make_player_hurt_noise();
+	void make_clear_level_noise();
+	void make_egg_noise();
+	void make_shrink_sound();
+	void make_grow_sound();
 #endif
