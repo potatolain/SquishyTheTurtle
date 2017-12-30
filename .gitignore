@@ -10,3 +10,4 @@ tools/upload.bat
 gbdk/*
 !gbdk/README.md
 !tools/**/README.md
+*.sav

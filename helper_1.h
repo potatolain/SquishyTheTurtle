@@ -24,4 +24,7 @@
 	void make_grow_sound();
 	void make_pause_sound();
 	void make_unpause_sound();
+	void init_sram();
+	void inc_starts();
+	void inc_ends();
 #endif

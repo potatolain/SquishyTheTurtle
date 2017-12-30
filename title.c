@@ -1,5 +1,6 @@
 #include "title.h"
 #include "main.h"
+#include "sram.h"
 #include <gb/gb.h>
 
 void show_title() {
@@ -11,6 +12,7 @@ void show_title() {
 	// This is exceedingly lazy/poor use of ROM space... It's one bank, and this is an example program. Deal with it.
 	set_bkg_data(0U, 128U, title_tiles);
 	set_bkg_tiles(0U, 0U, 20U, 20U, title_screens);
+
 	SHOW_BKG;
 	
 	DISPLAY_ON;

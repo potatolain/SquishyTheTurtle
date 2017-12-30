@@ -1,5 +1,5 @@
 GRAPHICS_FILES = base_sprites base_tiles title_tiles
-TILE_FILES = world_0 title_screens
+TILE_FILES = world_0 title_screens introwin_screens
 
 ifeq ($(OS),Windows_NT)
 # Nasty little trick to get us a backslash.
@@ -42,7 +42,11 @@ all:
 	$(CC) -Wa-l -Wf-bo4 -c -o bin/title_screens.o processed/title_screens.s
 	$(CC) -Wa-l -Wf-bo4 -c -o bin/title.o title.c
 	$(CC) -Wa-l -Wf-bo5 -c -o bin/world_0_sprites.o graphics/world_0_sprites.c
-	$(CC) -Wl-yt1 -Wl-yo8 -o ludumdare.gb bin/*.o
+	$(CC) -Wa-l -Wf-ba0 -c -o bin/sram.o sram.c
+	$(CC) -Wa-l -Wf-bo6 -c -o bin/introwin_screens.o processed/introwin_screens.s
+	$(CC) -Wa-l -Wf-bo6 -c -o bin/intro.o intro.c
+	$(CC) -Wa-l -Wf-bo6 -c -o bin/win.o win.c
+	$(CC) -Wl-yt3 -Wl-yo8 -Wl-ya1 -o ludumdare.gb bin/*.o
 	
 emu: 
 	$(BGB) ludumdare.gb 

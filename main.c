@@ -1,8 +1,11 @@
 #include "main.h"
 #include "helper_1.h"
 #include "title.h"
+#include "win.h"
 #include "sprite.h"
+#include "intro.h"
 #include "graphics/world_0_sprites.h"
+#include "sram.h"
 
 #include <gb/gb.h>
 #include <rand.h>
@@ -17,6 +20,8 @@
 #define BANK_HELPER_1 3U
 #define BANK_TITLE 4U
 #define BANK_SPRITE_DATA 5U
+#define BANK_INTRO 6U
+#define BANK_WIN 6u
 
 // This won't get confusing. Honest. I swear. &@#*!
 UBYTE i, j;
@@ -280,12 +285,20 @@ void init_level() {
 }
 
 void main(void) {
+	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	init_sram();
+
+	// Need to switch again, as we jump to this label to reset the game, and may not be in the helper bank.
 	startOver:
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
+	inc_starts();
 	init_vars();
 	
 	SWITCH_ROM_MBC1(BANK_TITLE);
 	show_title();
+	SWITCH_ROM_MBC1(BANK_INTRO);
+	show_intro();
+
 	initrand(sys_time);
 	
 	init_level();
@@ -308,8 +321,10 @@ void main(void) {
 				show_game_over();
 				goto startOver; // FREEDOM!!!!!!!! Start over.
 			case GAME_STATE_WINNER:
-				SWITCH_ROM_MBC1(BANK_TITLE);
-				show_win_screen();
+				SWITCH_ROM_MBC1(BANK_HELPER_1);
+				inc_ends();
+				SWITCH_ROM_MBC1(BANK_WIN);
+				show_win();
 				goto startOver;
 			case GAME_STATE_LOAD:
 				init_level();

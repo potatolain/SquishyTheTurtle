@@ -2,6 +2,7 @@
 #include "main.h"
 #include <gb/gb.h>
 #include <rand.h>
+#include "sram.h"
 
 // Yes, this is a pretty lame way to organize this thing... it's a 48 hour coding marathon, put up with it, or go elsewhere! 
 
@@ -420,6 +421,53 @@ void move_enemy_sprite() {
 	}
 	
 }
+
+void init_sram() {
+	ENABLE_RAM_MBC1;
+	SWITCH_RAM_MBC1(0);		
+	if (sram_magicByte != MAGIC_BYTE) {
+		sram_magicByte = MAGIC_BYTE;
+		sram_numberOfStarts[0] = 0U;
+		sram_numberOfStarts[1] = 0U;
+		sram_numberOfStarts[2] = 0U;
+		sram_numberOfStarts[3] = 0U;
+		sram_numberOfStarts[4] = 0U;
+		sram_numberOfEnds[0] = 0U;
+		sram_numberOfEnds[1] = 0U;
+		sram_numberOfEnds[2] = 0U;
+		sram_numberOfEnds[3] = 0U;
+		sram_numberOfEnds[4] = 0U;
+	}
+	DISABLE_RAM_MBC1;	
+}
+
+// TODO: This works on vba, fails miserably on BGB. Works on console as well. Assuming bgb is wrong. Would be nice to have it work, but it's lower priority than real consoles right now...
+void inc_starts() {
+	ENABLE_RAM_MBC1;
+	for (i = 0; i != 5; i++) {
+		++sram_numberOfStarts[i];
+		if (sram_numberOfStarts[i] > 9U) {
+			sram_numberOfStarts[i] -= 10U;
+		} else {
+			break;
+		}
+	}
+	DISABLE_RAM_MBC1;
+}
+
+void inc_ends() {
+	ENABLE_RAM_MBC1;
+	for (i = 0; i != 5; i++) {
+		++sram_numberOfEnds[i];
+		if (sram_numberOfEnds[i] > 9U) {
+			sram_numberOfEnds[i] -= 10U;
+		} else {
+			break;
+		}
+	}
+	DISABLE_RAM_MBC1;
+}
+
 
 void make_player_hurt_noise() {
 	

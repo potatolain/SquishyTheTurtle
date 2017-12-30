@@ -5,7 +5,7 @@
 #include "sprite.h"
 
 #define START_LEVEL 0U // This should be 0, but flipping it around makes testing easier.
-#define LAST_LEVEL 7U
+#define LAST_LEVEL 0U // Should be 7
 
 #define GAME_STATE_RUNNING 0U
 #define GAME_STATE_PAUSED 1U
@@ -13,6 +13,7 @@
 #define GAME_STATE_GAME_OVER 3U
 #define GAME_STATE_WINNER 4U
 #define GAME_STATE_LOAD 5U
+#define GAME_STATE_INTRO 6U
 
 #define SPRITE_SMALL 0
 #define SPRITE_BIG 8
@@ -56,6 +57,9 @@
 #define STATUS_BAR_HEIGHT 16U
 
 #define SPRITE_OFFSCREEN 0xEF
+
+// Change this to clear sram
+#define MAGIC_BYTE 0x42
 
 extern UBYTE base_tiles[];
 extern UBYTE base_sprites[];
