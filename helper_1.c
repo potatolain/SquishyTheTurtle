@@ -318,7 +318,7 @@ void init_vars() {
 	spriteSize = 8U;
 	
 	playerHealth = 5U;
-	gameState = GAME_STATE_RUNNING;
+	gameState = GAME_STATE_STARTUP;
 	playerVelocityLock = 0U;
 	currentEggs = 0U;
 	currentLevelNum = START_LEVEL;

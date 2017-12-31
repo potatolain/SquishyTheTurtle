@@ -37,6 +37,8 @@ UINT16 playerWorldTileStart, temp16, temp16b;
 UBYTE* currentMap;
 UBYTE* tempPointer; 
 enum SPRITE_DIRECTION playerDirection;
+UBYTE timerCycle, timerSecond, timerMinute, timerHour;
+UINT32 gameTimer;
 // Pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to pointers to...
 UBYTE* * * currentMapSprites;
 
@@ -119,6 +121,28 @@ void init_screen() {
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	finish_init_screen();
+}
+
+void addToGameTimer() {
+	if (gameState == GAME_STATE_RUNNING) {
+		++gameTimer;
+
+		++timerCycle;
+		// Why is this correct here? Who knows!?
+		if (timerCycle == 60u) {
+			timerCycle = 0u;
+			++timerSecond;
+			if (timerSecond == 60u) {
+				timerSecond = 0u;
+				++timerMinute;
+				if (timerMinute == 60u) {
+					timerMinute = 0u;
+					++timerHour;
+				}
+
+			}
+		}
+	}
 }
 
 // Get the position of the top left corner of a room on the map.
@@ -287,9 +311,16 @@ void init_level() {
 void main(void) {
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	init_sram();
+	// Every tick, increment a really big var... used to determine how fast you beat ze game.
+	add_VBL(addToGameTimer);
 
 	// Need to switch again, as we jump to this label to reset the game, and may not be in the helper bank.
 	startOver:
+	gameTimer = 0u;
+	timerCycle = 0u;
+	timerSecond = 0u;
+	timerMinute = 0u;
+	timerHour = 0u;
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	inc_starts();
 	init_vars();
@@ -306,6 +337,7 @@ void main(void) {
 	
 	SWITCH_ROM_MBC1(BANK_HELPER_1);
 	update_health();
+	gameState = GAME_STATE_RUNNING;
 	
 	while(1) {
 		switch (gameState) {

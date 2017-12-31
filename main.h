@@ -14,6 +14,7 @@
 #define GAME_STATE_WINNER 4U
 #define GAME_STATE_LOAD 5U
 #define GAME_STATE_INTRO 6U
+#define GAME_STATE_STARTUP 10u
 
 #define SPRITE_SMALL 0
 #define SPRITE_BIG 8
@@ -85,5 +86,5 @@ extern enum SPRITE_DIRECTION playerDirection;
 extern UBYTE* currentMap;
 extern UBYTE * * * currentMapSprites;
 extern UBYTE eggStatus[];
-
+extern UBYTE timerCycle, timerSecond, timerSecond, timerMinute, timerHour;
 #endif

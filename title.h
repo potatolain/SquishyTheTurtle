@@ -3,6 +3,7 @@
 #include <gb/gb.h>
 
 #define ALPHA_START 100U
+#define LC_ALPHA_START 62U
 #define NUM_START 90U
 
 extern UBYTE title_tiles[];

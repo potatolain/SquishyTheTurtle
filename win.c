@@ -6,6 +6,7 @@
 
 
 extern UBYTE title_tiles[];
+extern UINT32 gameTimer;
 
 void show_win() {
 	disable_interrupts();
@@ -40,6 +41,28 @@ void show_win() {
 			break;
 	set_bkg_tiles(14U, 12U, 5U, 1U, buffer);
 
+	// Okay, this part is hard. We have the number of interrupts that have occurred since the player hit start. 
+	// There are 59.7 (or 60.2 or so on SGB) in a second... so we're just gonna call it 60. 
+	//adjustedTimer = gameTimer / 60; // Okay, that's seconds.
+	//temp1 = adjustedTimer % 60; // Seconds
+	//temp2 = (adjustedTimer / 60) % 60; // Minutes
+	//temp3 = (adjustedTimer / 60 / 60) % 60; // Hours!?
+	// If you took more than an hour... sorry, you took 99:99.
+	if (timerHour > 0) {
+		timerMinute = 99;
+		timerSecond = 99;
+	}
+	// Ok now put buffered time into the thingie
+	//buffer[0] = '0';
+	//buffer[1] = '0';
+	//buffer[2] = 'h';
+	buffer[0] = NUM_START + (timerMinute / 10);
+	buffer[1] = NUM_START + (timerMinute % 10);
+	buffer[2] = 'm' - 'a' + LC_ALPHA_START;
+	buffer[3] = NUM_START + (timerSecond / 10);
+	buffer[4] = NUM_START + (timerSecond % 10);
+	buffer[5] = 's' - 'a' + LC_ALPHA_START;
+	set_bkg_tiles(13U, 13U, 6U, 1U, buffer);
 
 
 	DISABLE_RAM_MBC1;
