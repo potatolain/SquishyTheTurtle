@@ -30,7 +30,7 @@ void show_win() {
 			buffer[i] = BLANK_TILE;
 		else
 			break;
-	set_bkg_tiles(14U, 11U, 5U, 1U, buffer);
+	set_bkg_tiles(14U, 10U, 5U, 1U, buffer);
 	
 	for (i = 0U; i != 5U; ++i)
 		buffer[i] = sram_numberOfEnds[4-i] + NUM_START;
@@ -39,7 +39,7 @@ void show_win() {
 			buffer[i] = BLANK_TILE;
 		else
 			break;
-	set_bkg_tiles(14U, 12U, 5U, 1U, buffer);
+	set_bkg_tiles(14U, 11U, 5U, 1U, buffer);
 
 	// Okay, this part is hard. We have the number of interrupts that have occurred since the player hit start. 
 	// There are 59.7 (or 60.2 or so on SGB) in a second... so we're just gonna call it 60. 
@@ -62,7 +62,7 @@ void show_win() {
 	buffer[3] = NUM_START + (timerSecond / 10);
 	buffer[4] = NUM_START + (timerSecond % 10);
 	buffer[5] = 's' - 'a' + LC_ALPHA_START;
-	set_bkg_tiles(13U, 13U, 6U, 1U, buffer);
+	set_bkg_tiles(13U, 12U, 6U, 1U, buffer);
 
 
 	DISABLE_RAM_MBC1;
