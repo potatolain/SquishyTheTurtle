@@ -27,7 +27,7 @@
 UBYTE i, j;
 
 UBYTE isMiniMode;
-UBYTE temp1, temp2, temp3, temp4, temp5, temp6;
+UBYTE temp1, temp2, temp3, temp4, temp5, temp6, temp7;
 UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, spriteSize, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum, exitPositionX, exitPositionY;
 UBYTE playerHealth;
 UBYTE collisionsAreForPlayer; // SUPER HACK... simply tells us whether we are doing player collisions or sprite collisions.
@@ -176,40 +176,43 @@ void move_sprites() {
 	// Now, we test collision with our temp4 and temp5
 	if (sprites[temp1].type != SPRITE_TYPE_EGG) {
 		
-		if (sprites[temp1].direction == SPRITE_DIRECTION_STOP)
-			return;
+		if (sprites[temp1].direction != SPRITE_DIRECTION_STOP) {
 
-		// temp6 is our sprite width.
-		if (sprites[temp1].direction == SPRITE_DIRECTION_LEFT || sprites[temp1].direction == SPRITE_DIRECTION_RIGHT) {
-			if (temp4+temp6 >= SCREEN_WIDTH || temp4 <= 4U) {
-				temp4 = sprites[temp1].x;
-			} else {
-				if (sprites[temp1].direction == SPRITE_DIRECTION_RIGHT) {
-					if (test_collision(temp4+temp6, temp5) || test_collision(temp4 + temp6, temp5+sprites[temp1].size)) {
-						temp4 = sprites[temp1].x;
-					}
+			// temp6 is our sprite width.
+			if (sprites[temp1].direction == SPRITE_DIRECTION_LEFT || sprites[temp1].direction == SPRITE_DIRECTION_RIGHT) {
+				if (temp4+temp6 >= SCREEN_WIDTH || temp4 <= 4U) {
+					temp4 = sprites[temp1].x;
 				} else {
-					if (test_collision(temp4-1U, temp5) || test_collision(temp4-1U, temp5+sprites[temp1].size)) {
-						temp4 = sprites[temp1].x;
+					if (sprites[temp1].direction == SPRITE_DIRECTION_RIGHT) {
+						if (test_collision(temp4+temp6, temp5) || test_collision(temp4 + temp6, temp5+sprites[temp1].size)) {
+							temp4 = sprites[temp1].x;
+						}
+					} else {
+						if (test_collision(temp4-1U, temp5) || test_collision(temp4-1U, temp5+sprites[temp1].size)) {
+							temp4 = sprites[temp1].x;
+						}
 					}
 				}
 			}
-		}
-		
-		if (sprites[temp1].direction == SPRITE_DIRECTION_UP || sprites[temp1].direction == SPRITE_DIRECTION_DOWN) {
-			if (temp5+sprites[temp1].size >= SCREEN_HEIGHT || temp5 <= 4U) {
-				temp5 = sprites[temp1].y;
-			} else {
-				if (sprites[temp1].direction == SPRITE_DIRECTION_DOWN) {
-					if (test_collision(temp4, temp5+sprites[temp1].size) || test_collision(temp4+sprites[temp1].size, temp5 + sprites[temp1].size)) {
-						temp5 = sprites[temp1].y;
-					}
+			
+			if (sprites[temp1].direction == SPRITE_DIRECTION_UP || sprites[temp1].direction == SPRITE_DIRECTION_DOWN) {
+				if (temp5+sprites[temp1].size >= SCREEN_HEIGHT || temp5 <= 4U) {
+					temp5 = sprites[temp1].y;
 				} else {
-					if (test_collision(temp4, temp5) || test_collision(temp4 + sprites[temp1].size, temp5)) {
-						temp5 = sprites[temp1].y;
+					if (sprites[temp1].direction == SPRITE_DIRECTION_DOWN) {
+						if (test_collision(temp4, temp5+sprites[temp1].size) || test_collision(temp4+sprites[temp1].size, temp5 + sprites[temp1].size)) {
+							temp5 = sprites[temp1].y;
+						}
+					} else {
+						if (test_collision(temp4, temp5) || test_collision(temp4 + sprites[temp1].size, temp5)) {
+							temp5 = sprites[temp1].y;
+						}
 					}
 				}
 			}
+		} else {
+			temp4 = sprites[temp1].x;
+			temp5 = sprites[temp1].y;
 		}
 		
 		// Okay, you can move.

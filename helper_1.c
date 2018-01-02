@@ -124,7 +124,7 @@ void turn_x_y_to_tile(UBYTE x, UBYTE y) {
 
 void do_player_movey_stuff() {
 	// temp3 will be anything we might have collided with.
-	if (isMiniMode && temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
+	if (isMiniMode && !playerVelocityLock && temp3 > FIRST_WATER_TILE && temp3 < FIRST_LOG_TILE) {
 		playerXVel = -playerXVel;
 		playerYVel = -playerYVel;
 		temp1 = playerX + playerXVel;
@@ -179,9 +179,13 @@ void do_player_movey_stuff() {
 			set_sprite_tile(0, ((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT) + ((playerDirection-1)<<1)); // HACK: We know this is 0, so don't add a base # to it.
 	} else {
 		for (i = 0U; i != 4U; i++) {
-			move_sprite(i, playerX + (i/2U)*8U, playerY + (i%2U)*8U);
-			if (playerXVel + playerYVel != 0U)
-				set_sprite_tile(i, SPRITE_BIG + (((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)<<2U) + ((playerDirection-1U)<<3U) + i);
+			if (playerVelocityLock && (sys_time & PLAYER_BLINKY_INTERVAL) >> PLAYER_BLINKY_SHIFT) {
+				move_sprite(i, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
+			} else {
+				move_sprite(i, playerX + (i/2U)*8U, playerY + (i%2U)*8U);
+				if (playerXVel + playerYVel != 0U)
+					set_sprite_tile(i, SPRITE_BIG + (((sys_time & PLAYER_ANIM_INTERVAL) >> PLAYER_ANIM_SHIFT)<<2U) + ((playerDirection-1U)<<3U) + i);
+			}
 		}
 	}
 	
@@ -273,7 +277,7 @@ void test_sprite_collision() {
 				update_egg();
 				make_egg_noise();
 				return;
-			} else {
+			} else if (!playerVelocityLock) {
 				playerHealth--;
 				make_player_hurt_noise();
 				if (playerHealth == 0) {
@@ -364,6 +368,13 @@ void move_sprites_for_load() {
 	// Leaving room for 4 sprite... sprites, but for now, we'll just use the first.
 	set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2U), ENEMY_SPRITE_START + (sprites[temp2].type << 2U));
 	move_sprite(WORLD_SPRITE_START + (temp2 << 2U), sprites[temp2].x, sprites[temp2].y);
+	if (sprites[temp2].type == SPRITE_TYPE_CRAB) {
+		set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2u) + 1, ENEMY_SPRITE_START + (sprites[temp2].type << 2u)+1);
+		move_sprite(WORLD_SPRITE_START + (temp2 <<2u) + 1, sprites[temp2].x + 8u, sprites[temp2].y);		
+	} else {
+		set_sprite_tile(WORLD_SPRITE_START + (temp2 << 2u) + 1, 0);
+		move_sprite(WORLD_SPRITE_START + (temp2 <<2u) + 1, sprites[temp2].x, SPRITE_OFFSCREEN);
+	}
 
 }
 
@@ -408,14 +419,23 @@ void write_map_to_memory() {
 void move_enemy_sprite() {
 	sprites[temp1].x = temp4;
 	sprites[temp1].y = temp5;
-	
 	if (sprites[temp1].type == SPRITE_TYPE_CRAB) {
+		if (sprites[temp1].direction != SPRITE_DIRECTION_STOP) {
+			temp7 = (((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT)<<1U);
+		} else {
+			temp7 = 0;
+		}
 		// The patchwork crab... other move is in main()
 		move_sprite(WORLD_SPRITE_START + (temp1 << 2U)+1U, temp4+8U, temp5);
-		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), CRAB_SPRITE + (((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT)<<1U));
-		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U)+1U, CRAB_SPRITE + 1U + (((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT)<<1U));
+		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), CRAB_SPRITE + temp7);
+		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U)+1U, CRAB_SPRITE + 1U + temp7);
 	} else {
-		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), ENEMY_SPRITE_START + (sprites[temp1].type << 2U) + ((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT));
+		if (sprites[temp1].direction != SPRITE_DIRECTION_STOP) {
+			temp7 = ((sys_time & SPRITE_ANIM_INTERVAL) >> SPRITE_ANIM_SHIFT);
+		} else {
+			temp7 = 0;
+		}
+		set_sprite_tile(WORLD_SPRITE_START + (temp1 << 2U), ENEMY_SPRITE_START + (sprites[temp1].type << 2U) + temp7);
 		// This is just getting scary bad...
 		move_sprite(WORLD_SPRITE_START + (temp1 << 2U)+1U, SPRITE_OFFSCREEN, SPRITE_OFFSCREEN);
 	}

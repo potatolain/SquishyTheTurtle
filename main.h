@@ -79,7 +79,7 @@ UBYTE get_tile_at_pos(UINT16 position);
 extern UBYTE i, j;
 extern UBYTE playerWorldPos, playerX, playerY, btns, oldBtns, playerXVel, playerYVel, isMiniMode, spriteSize, playerHealth, gameState, playerVelocityLock, cycleCounter, currentEggs, totalEggs, currentLevelNum, exitPositionX, exitPositionY;
 extern UINT16 temp16, playerWorldTileStart, temp16b;
-extern UBYTE temp1, temp2, temp3, temp4, temp5, temp6;
+extern UBYTE temp1, temp2, temp3, temp4, temp5, temp6, temp7;
 extern UBYTE collisionsAreForPlayer;
 extern struct SPRITE sprites[6];
 extern enum SPRITE_DIRECTION playerDirection;

@@ -37,7 +37,7 @@ void show_game_over() {
 			
 	// This is exceedingly lazy/poor use of ROM space... It's one bank, and this is an example program. Deal with it.
 	set_bkg_data(0U, 128U, title_tiles);
-	set_bkg_tiles(0U, 0U, 20U, 20U, title_screens+(20U*16U));
+	set_bkg_tiles(0U, 0U, 20U, 20U, title_screens+(20U*18U));
 	SHOW_BKG;
 	
 	DISPLAY_ON;
